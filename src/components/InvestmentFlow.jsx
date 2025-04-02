@@ -1,0 +1,192 @@
+
+import { useState } from 'react';
+import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Typography,
+  Card,
+  CardContent,
+  Grid,
+  Button,
+  Box,
+  TextField,
+  Stepper,
+  Step,
+  StepLabel,
+} from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ApartmentIcon from '@mui/icons-material/Apartment';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import PaymentIcon from '@mui/icons-material/Payment';
+
+const projects = [
+  {
+    name: 'Aura',
+    location: 'Bangalore',
+    minInvestment: '₹1 Lakh',
+    returns: '14% p.a.',
+    lockIn: '3 years',
+  },
+  {
+    name: 'Subha White Waters',
+    location: 'Bangalore',
+    minInvestment: '₹1.5 Lakh',
+    returns: '16% p.a.',
+    lockIn: '4 years',
+  },
+];
+
+const investmentModels = [
+  {
+    name: 'Gold Investment Model',
+    minInvestment: '₹1L',
+    roi: '12%',
+    lockIn: '3 years',
+    slots: 5,
+  },
+  {
+    name: 'Platinum Investment Model',
+    minInvestment: '₹1L',
+    roi: '14%',
+    lockIn: '4 years',
+    slots: 3,
+  },
+  {
+    name: 'Virtual Investment Model',
+    minInvestment: '₹1L',
+    roi: '10%',
+    lockIn: '2 years',
+    slots: 10,
+  },
+];
+
+export default function InvestmentFlow() {
+  const [activeStep, setActiveStep] = useState(0);
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [selectedModel, setSelectedModel] = useState(null);
+  const [slots, setSlots] = useState(1);
+
+  const steps = ['Select Project', 'Choose Model', 'Slots & Payment'];
+
+  const handleNext = () => {
+    setActiveStep((prev) => prev + 1);
+  };
+
+  return (
+    <Box>
+      <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
+        {steps.map((label) => (
+          <Step key={label}>
+            <StepLabel>{label}</StepLabel>
+          </Step>
+        ))}
+      </Stepper>
+
+      <Accordion
+        expanded={activeStep === 0}
+        onChange={() => setActiveStep(0)}
+      >
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <ApartmentIcon sx={{ mr: 2 }} />
+          <Typography>Project Selection</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Grid container spacing={3}>
+            {projects.map((project) => (
+              <Grid item xs={12} md={6} key={project.name}>
+                <Card
+                  variant={selectedProject?.name === project.name ? 'elevation' : 'outlined'}
+                  onClick={() => {
+                    setSelectedProject(project);
+                    handleNext();
+                  }}
+                  sx={{ cursor: 'pointer' }}
+                >
+                  <CardContent>
+                    <Typography variant="h6">{project.name}</Typography>
+                    <Typography color="text.secondary">{project.location}</Typography>
+                    <Typography>Min Investment: {project.minInvestment}</Typography>
+                    <Typography>Returns: {project.returns}</Typography>
+                    <Typography>Lock-in: {project.lockIn}</Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </AccordionDetails>
+      </Accordion>
+
+      <Accordion
+        expanded={activeStep === 1}
+        onChange={() => selectedProject && setActiveStep(1)}
+      >
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <AccountBalanceIcon sx={{ mr: 2 }} />
+          <Typography>Investment Model</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Grid container spacing={3}>
+            {investmentModels.map((model) => (
+              <Grid item xs={12} md={4} key={model.name}>
+                <Card
+                  variant={selectedModel?.name === model.name ? 'elevation' : 'outlined'}
+                  onClick={() => {
+                    setSelectedModel(model);
+                    handleNext();
+                  }}
+                  sx={{ cursor: 'pointer' }}
+                >
+                  <CardContent>
+                    <Typography variant="h6">{model.name}</Typography>
+                    <Typography>Min Investment: {model.minInvestment}</Typography>
+                    <Typography>ROI: {model.roi}</Typography>
+                    <Typography>Lock-in: {model.lockIn}</Typography>
+                    <Typography>Available Slots: {model.slots}</Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </AccordionDetails>
+      </Accordion>
+
+      <Accordion
+        expanded={activeStep === 2}
+        onChange={() => selectedModel && setActiveStep(2)}
+      >
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <PaymentIcon sx={{ mr: 2 }} />
+          <Typography>Slots & Payment</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Box sx={{ maxWidth: 400, mx: 'auto' }}>
+            <TextField
+              fullWidth
+              type="number"
+              label="Number of Slots"
+              value={slots}
+              onChange={(e) => setSlots(e.target.value)}
+              sx={{ mb: 3 }}
+            />
+            <Typography variant="h6" sx={{ mb: 2 }}>
+              Total Investment: ₹{slots * 100000}
+            </Typography>
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <Button fullWidth variant="contained" color="primary">
+                  Pay Now
+                </Button>
+              </Grid>
+              <Grid item xs={6}>
+                <Button fullWidth variant="outlined" color="primary">
+                  Invest Later
+                </Button>
+              </Grid>
+            </Grid>
+          </Box>
+        </AccordionDetails>
+      </Accordion>
+    </Box>
+  );
+}
