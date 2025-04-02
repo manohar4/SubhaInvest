@@ -27,9 +27,9 @@ export default function Dashboard() {
         <BiBuildingHouse style={{ verticalAlign: 'middle', marginRight: '10px' }} />
         Premium Real Estate Investment Opportunities
       </Typography>
-      <Grid container spacing={4}>
+      <Grid container spacing={4} sx={{ display: 'flex', justifyContent: 'center' }}>
         {projects.map((project) => (
-          <Grid item xs={12} md={6} key={project.name}>
+          <Grid item sx={{ width: { xs: '100%', md: '500px' } }} key={project.name}>
             <Card 
               sx={{ 
                 height: '100%',
