@@ -67,6 +67,7 @@ export default function InvestmentFlow() {
   const [selectedProject, setSelectedProject] = useState(null);
   const [selectedModel, setSelectedModel] = useState(null);
   const [slots, setSlots] = useState(1);
+  const [showSummary, setShowSummary] = useState(false);
 
   const steps = ['Select Project', 'Choose Model', 'Slots & Payment'];
 
@@ -202,33 +203,105 @@ export default function InvestmentFlow() {
       >
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <PaymentIcon sx={{ mr: 2 }} />
-          <Typography>Slots & Payment</Typography>
+          <Typography>Select Lot/Share</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Box sx={{ maxWidth: 400, mx: 'auto' }}>
-            <TextField
-              fullWidth
-              type="number"
-              label="Number of Slots"
-              value={slots}
-              onChange={(e) => setSlots(e.target.value)}
-              sx={{ mb: 3 }}
-            />
-            <Typography variant="h6" sx={{ mb: 2 }}>
-              Total Investment: ₹{slots * 100000}
-            </Typography>
-            <Grid container spacing={2}>
-              <Grid item xs={6}>
-                <Button fullWidth variant="contained" color="primary">
-                  Pay Now
-                </Button>
+          <Box sx={{ maxWidth: 600, mx: 'auto' }}>
+            <Grid container spacing={2} sx={{ mb: 3 }}>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  fullWidth
+                  type="number"
+                  label="Number of Slots"
+                  value={slots}
+                  onChange={(e) => setSlots(e.target.value)}
+                />
               </Grid>
-              <Grid item xs={6}>
-                <Button fullWidth variant="outlined" color="primary">
-                  Invest Later
-                </Button>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  fullWidth
+                  type="number"
+                  label="Quantity per Slot"
+                  value={slots}
+                  onChange={(e) => setSlots(e.target.value)}
+                />
               </Grid>
             </Grid>
+            
+            <Typography variant="h6" sx={{ mb: 3 }}>
+              Total Investment: ₹{slots * 100000}
+            </Typography>
+            
+            <Button 
+              fullWidth 
+              variant="contained" 
+              color="primary"
+              onClick={() => setShowSummary(true)}
+              sx={{
+                py: 1.5,
+                background: 'linear-gradient(45deg, #005c90 30%, #0288d1 90%)',
+                '&:hover': {
+                  background: 'linear-gradient(45deg, #004b75 30%, #0277bd 90%)',
+                }
+              }}
+            >
+              Proceed To Payment
+            </Button>
+
+            {showSummary && (
+              <Box sx={{ mt: 4 }}>
+                <Typography variant="h6" gutterBottom sx={{ color: '#005c90' }}>
+                  Investment Summary
+                </Typography>
+                
+                {selectedProject && (
+                  <Card sx={{ mb: 2 }}>
+                    <CardContent>
+                      <Typography variant="h6">{selectedProject.name}</Typography>
+                      <Typography color="text.secondary">{selectedProject.location}</Typography>
+                      <Typography>Returns: {selectedProject.returns}</Typography>
+                      <Typography>Lock-in: {selectedProject.lockIn}</Typography>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {selectedModel && (
+                  <Card sx={{ mb: 2 }}>
+                    <CardContent>
+                      <Typography variant="h6">{selectedModel.name}</Typography>
+                      <Typography>ROI: {selectedModel.roi}</Typography>
+                      <Typography>Lock-in: {selectedModel.lockIn}</Typography>
+                    </CardContent>
+                  </Card>
+                )}
+
+                <Card sx={{ mb: 3 }}>
+                  <CardContent>
+                    <Typography variant="h6">Selected Slots/Shares</Typography>
+                    <Typography>Number of Slots: {slots}</Typography>
+                    <Typography>Quantity per Slot: {slots}</Typography>
+                    <Typography variant="h6" sx={{ mt: 2, color: '#005c90' }}>
+                      Total Investment: ₹{slots * 100000}
+                    </Typography>
+                  </CardContent>
+                </Card>
+
+                <Button 
+                  fullWidth 
+                  variant="contained" 
+                  color="primary"
+                  sx={{
+                    py: 1.5,
+                    background: 'linear-gradient(45deg, #005c90 30%, #0288d1 90%)',
+                    '&:hover': {
+                      background: 'linear-gradient(45deg, #004b75 30%, #0277bd 90%)',
+                    }
+                  }}
+                >
+                  Pay Now
+                </Button>
+              </Box>
+            )}
           </Box>
         </AccordionDetails>
       </Accordion>
