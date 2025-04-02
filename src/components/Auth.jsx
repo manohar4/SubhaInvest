@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, TextField, Button, Typography, Paper } from '@mui/material';
@@ -56,8 +55,17 @@ export default function Auth() {
         }}
       >
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 4 }}>
-          <img src="/logo.png" alt="Subha Logo" style={{ height: '60px', marginBottom: '10px' }} />
-          <Typography variant="h4" sx={{ color: '#005c90', fontWeight: 600 }}>
+          <img 
+            src="/logo.png" 
+            alt="Subha Logo" 
+            style={{ 
+              width: '200px',
+              height: 'auto',
+              marginBottom: '20px',
+              objectFit: 'contain'
+            }} 
+          />
+          <Typography variant="h4" sx={{ color: '#005c90', fontWeight: 600, letterSpacing: '1px' }}>
             Invest
           </Typography>
         </Box>
@@ -67,7 +75,7 @@ export default function Auth() {
         <Typography variant="body1" align="center" sx={{ mb: 4, color: '#666' }}>
           Login to access your investment portfolio
         </Typography>
-        
+
         <form onSubmit={showOtp ? handleLogin : handleSendOtp}>
           <TextField
             fullWidth
@@ -78,7 +86,7 @@ export default function Auth() {
             sx={{ mb: 2 }}
             disabled={showOtp}
           />
-          
+
           {showOtp && (
             <TextField
               fullWidth
@@ -90,7 +98,7 @@ export default function Auth() {
               inputProps={{ maxLength: 6 }}
             />
           )}
-          
+
           <Button
             fullWidth
             variant="contained"
