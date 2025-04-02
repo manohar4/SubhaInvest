@@ -15,6 +15,7 @@ import {
   StepLabel,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import AddIcon from '@mui/icons-material/Add';
 import ApartmentIcon from '@mui/icons-material/Apartment';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import PaymentIcon from '@mui/icons-material/Payment';
@@ -77,7 +78,10 @@ export default function InvestmentFlow() {
 
   return (
     <Box sx={{ maxWidth: '900px', mx: 'auto', width: '100%', px: { xs: 2, sm: 3 }, mt: 3 }}>
-      <Typography variant="h4" sx={{ mb: 2 }}>+ New Investment</Typography> {/* Added page heading */}
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+        <AddIcon sx={{ mr: 1, color: '#005c90' }} />
+        <Typography variant="h4">New Investment</Typography>
+      </Box> {/* Added page heading */}
       <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
         {steps.map((label) => (
           <Step key={label}>
