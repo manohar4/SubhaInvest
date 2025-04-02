@@ -59,8 +59,8 @@ export default function Auth() {
             src="/logo.png" 
             alt="Subha Logo" 
             style={{ 
-              width: '200px',
-              height: 'auto',
+              width: '180px',
+              height: '60px',
               marginBottom: '20px',
               objectFit: 'contain'
             }} 
