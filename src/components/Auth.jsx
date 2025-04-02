@@ -55,7 +55,13 @@ export default function Auth() {
           zIndex: 1,
         }}
       >
-        <Typography variant="h4" align="center" gutterBottom sx={{ color: '#005c90', fontWeight: 600 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 4 }}>
+          <img src="/logo.png" alt="Subha Logo" style={{ height: '60px', marginBottom: '10px' }} />
+          <Typography variant="h4" sx={{ color: '#005c90', fontWeight: 600 }}>
+            Invest
+          </Typography>
+        </Box>
+        <Typography variant="h5" align="center" gutterBottom sx={{ color: '#005c90' }}>
           Welcome Back
         </Typography>
         <Typography variant="body1" align="center" sx={{ mb: 4, color: '#666' }}>
