@@ -25,7 +25,7 @@ export default function Layout() {
           </IconButton>
         </Toolbar>
       </AppBar>
-      <Box sx={{ p: 3 }}>
+      <Box>
         <Outlet />
       </Box>
     </Box>

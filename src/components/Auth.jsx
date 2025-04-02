@@ -41,7 +41,7 @@ export default function Auth() {
         alignItems: 'center',
         justifyContent: 'center',
         bgcolor: 'white',
-        p: 4
+        p: 0
       }}>
         <Box sx={{ maxWidth: 400, width: '100%' }}>
           <Box sx={{ 
