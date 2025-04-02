@@ -35,6 +35,8 @@ export default function Dashboard() {
                 height: '100%',
                 cursor: 'pointer',
                 transition: '0.3s',
+                display: 'flex',
+                flexDirection: 'column',
                 '&:hover': {
                   transform: 'translateY(-8px)',
                   boxShadow: 6,

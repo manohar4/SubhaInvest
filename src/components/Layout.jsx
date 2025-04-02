@@ -9,14 +9,17 @@ export default function Layout() {
 
   return (
     <Box>
-      <AppBar position="static" sx={{ bgcolor: '#005c90' }}>
-        <Toolbar>
+      <AppBar position="static" sx={{ bgcolor: '#005c90', px: 0 }}>
+        <Toolbar sx={{ px: 0 }}>
           <IconButton color="inherit" onClick={() => navigate('/dashboard')}>
             <HomeIcon />
           </IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Real Estate Investment
-          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+            <img src="/logo.png" alt="Subha Logo" style={{ height: '40px', marginRight: '10px' }} />
+            <Typography variant="h6" component="div">
+              Invest
+            </Typography>
+          </Box>
           <IconButton color="inherit" onClick={() => navigate('/profile')}>
             <AccountCircleIcon />
           </IconButton>

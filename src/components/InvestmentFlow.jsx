@@ -19,6 +19,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ApartmentIcon from '@mui/icons-material/Apartment';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import PaymentIcon from '@mui/icons-material/Payment';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 const projects = [
   {
@@ -105,6 +106,7 @@ export default function InvestmentFlow() {
                     cursor: 'pointer',
                     transition: '0.3s',
                     border: selectedProject?.name === project.name ? '2px solid #005c90' : '1px solid rgba(0,0,0,0.12)',
+                    position: 'relative',
                     '&:hover': {
                       transform: 'translateY(-4px)',
                       boxShadow: 3,
@@ -112,6 +114,18 @@ export default function InvestmentFlow() {
                     }
                   }}
                 >
+                  {selectedProject?.name === project.name && (
+                    <CheckCircleIcon 
+                      sx={{ 
+                        position: 'absolute',
+                        top: 10,
+                        right: 10,
+                        color: '#005c90',
+                        bgcolor: 'white',
+                        borderRadius: '50%'
+                      }} 
+                    />
+                  )}
                   <CardContent>
                     <Typography variant="h6">{project.name}</Typography>
                     <Typography color="text.secondary">{project.location}</Typography>
@@ -144,8 +158,30 @@ export default function InvestmentFlow() {
                     setSelectedModel(model);
                     handleNext();
                   }}
-                  sx={{ cursor: 'pointer' }}
+                  sx={{ 
+                    cursor: 'pointer',
+                    transition: '0.3s',
+                    border: selectedModel?.name === model.name ? '2px solid #005c90' : '1px solid rgba(0,0,0,0.12)',
+                    position: 'relative',
+                    '&:hover': {
+                      transform: 'translateY(-4px)',
+                      boxShadow: 3,
+                      borderColor: '#005c90'
+                    }
+                  }}
                 >
+                  {selectedModel?.name === model.name && (
+                    <CheckCircleIcon 
+                      sx={{ 
+                        position: 'absolute',
+                        top: 10,
+                        right: 10,
+                        color: '#005c90',
+                        bgcolor: 'white',
+                        borderRadius: '50%'
+                      }} 
+                    />
+                  )}
                   <CardContent>
                     <Typography variant="h6">{model.name}</Typography>
                     <Typography>Min Investment: {model.minInvestment}</Typography>
