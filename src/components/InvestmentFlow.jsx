@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import {
   Accordion,
@@ -67,6 +66,7 @@ export default function InvestmentFlow() {
   const [selectedProject, setSelectedProject] = useState(null);
   const [selectedModel, setSelectedModel] = useState(null);
   const [slots, setSlots] = useState(1);
+  const [quantity, setQuantity] = useState(1); // Added state for quantity per slot
   const [showSummary, setShowSummary] = useState(false);
 
   const steps = ['Select Project', 'Choose Model', 'Slots & Payment'];
@@ -76,7 +76,8 @@ export default function InvestmentFlow() {
   };
 
   return (
-    <Box sx={{ maxWidth: '900px', mx: 'auto', width: '100%', px: { xs: 2, sm: 3 }, mt: 3, bgcolor: '#f8f9fa' }}>
+    <Box sx={{ maxWidth: '900px', mx: 'auto', width: '100%', px: { xs: 2, sm: 3 }, mt: 3 }}>
+      <Typography variant="h4" sx={{ mb: 2 }}>+ New Investment</Typography> {/* Added page heading */}
       <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
         {steps.map((label) => (
           <Step key={label}>
@@ -88,6 +89,7 @@ export default function InvestmentFlow() {
       <Accordion
         expanded={activeStep === 0}
         onChange={() => setActiveStep(0)}
+        sx={{ bgcolor: '#EEEEEE' }} // Added background color to Accordion
       >
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <ApartmentIcon sx={{ mr: 2 }} />
@@ -103,7 +105,7 @@ export default function InvestmentFlow() {
                     setSelectedProject(project);
                     handleNext();
                   }}
-                  sx={{ 
+                  sx={{
                     cursor: 'pointer',
                     transition: '0.3s',
                     border: selectedProject?.name === project.name ? '2px solid #005c90' : '1px solid rgba(0,0,0,0.12)',
@@ -111,20 +113,20 @@ export default function InvestmentFlow() {
                     '&:hover': {
                       transform: 'translateY(-4px)',
                       boxShadow: 3,
-                      borderColor: '#005c90'
-                    }
+                      borderColor: '#005c90',
+                    },
                   }}
                 >
                   {selectedProject?.name === project.name && (
-                    <CheckCircleIcon 
-                      sx={{ 
+                    <CheckCircleIcon
+                      sx={{
                         position: 'absolute',
                         top: 10,
                         right: 10,
                         color: '#005c90',
                         bgcolor: 'white',
-                        borderRadius: '50%'
-                      }} 
+                        borderRadius: '50%',
+                      }}
                     />
                   )}
                   <CardContent>
@@ -144,6 +146,7 @@ export default function InvestmentFlow() {
       <Accordion
         expanded={activeStep === 1}
         onChange={() => selectedProject && setActiveStep(1)}
+        sx={{ bgcolor: '#EEEEEE' }} // Added background color to Accordion
       >
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <AccountBalanceIcon sx={{ mr: 2 }} />
@@ -159,7 +162,7 @@ export default function InvestmentFlow() {
                     setSelectedModel(model);
                     handleNext();
                   }}
-                  sx={{ 
+                  sx={{
                     cursor: 'pointer',
                     transition: '0.3s',
                     border: selectedModel?.name === model.name ? '2px solid #005c90' : '1px solid rgba(0,0,0,0.12)',
@@ -167,20 +170,20 @@ export default function InvestmentFlow() {
                     '&:hover': {
                       transform: 'translateY(-4px)',
                       boxShadow: 3,
-                      borderColor: '#005c90'
-                    }
+                      borderColor: '#005c90',
+                    },
                   }}
                 >
                   {selectedModel?.name === model.name && (
-                    <CheckCircleIcon 
-                      sx={{ 
+                    <CheckCircleIcon
+                      sx={{
                         position: 'absolute',
                         top: 10,
                         right: 10,
                         color: '#005c90',
                         bgcolor: 'white',
-                        borderRadius: '50%'
-                      }} 
+                        borderRadius: '50%',
+                      }}
                     />
                   )}
                   <CardContent>
@@ -200,6 +203,8 @@ export default function InvestmentFlow() {
       <Accordion
         expanded={activeStep === 2}
         onChange={() => selectedModel && setActiveStep(2)}
+        sx={{ bgcolor: '#EEEEEE' }} // Added background color to Accordion
+
       >
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <PaymentIcon sx={{ mr: 2 }} />
@@ -214,7 +219,7 @@ export default function InvestmentFlow() {
                   type="number"
                   label="Number of Slots"
                   value={slots}
-                  onChange={(e) => setSlots(e.target.value)}
+                  onChange={(e) => setSlots(parseInt(e.target.value, 10) || 0)} //added parseInt and default 0
                 />
               </Grid>
               <Grid item xs={12} md={6}>
@@ -222,19 +227,19 @@ export default function InvestmentFlow() {
                   fullWidth
                   type="number"
                   label="Quantity per Slot"
-                  value={slots}
-                  onChange={(e) => setSlots(e.target.value)}
+                  value={quantity}
+                  onChange={(e) => setQuantity(parseInt(e.target.value, 10) || 0)} //added parseInt and default 0
                 />
               </Grid>
             </Grid>
-            
+
             <Typography variant="h6" sx={{ mb: 3 }}>
-              Total Investment: ₹{slots * 100000}
+              Total Investment: ₹{slots * quantity * 100000}
             </Typography>
-            
-            <Button 
-              fullWidth 
-              variant="contained" 
+
+            <Button
+              fullWidth
+              variant="contained"
               color="primary"
               onClick={() => setShowSummary(true)}
               sx={{
@@ -242,7 +247,7 @@ export default function InvestmentFlow() {
                 background: 'linear-gradient(45deg, #005c90 30%, #0288d1 90%)',
                 '&:hover': {
                   background: 'linear-gradient(45deg, #004b75 30%, #0277bd 90%)',
-                }
+                },
               }}
             >
               Proceed To Payment
@@ -256,7 +261,7 @@ export default function InvestmentFlow() {
           <Typography variant="h6" gutterBottom sx={{ color: '#005c90' }}>
             Investment Summary
           </Typography>
-          
+
           {selectedProject && (
             <Card sx={{ mb: 2 }}>
               <CardContent>
@@ -282,23 +287,23 @@ export default function InvestmentFlow() {
             <CardContent>
               <Typography variant="h6">Selected Slots/Shares</Typography>
               <Typography>Number of Slots: {slots}</Typography>
-              <Typography>Quantity per Slot: {slots}</Typography>
+              <Typography>Quantity per Slot: {quantity}</Typography>
               <Typography variant="h6" sx={{ mt: 2, color: '#005c90' }}>
-                Total Investment: ₹{slots * 100000}
+                Total Investment: ₹{slots * quantity * 100000}
               </Typography>
             </CardContent>
           </Card>
 
-          <Button 
-            fullWidth 
-            variant="contained" 
+          <Button
+            fullWidth
+            variant="contained"
             color="primary"
             sx={{
               py: 1.5,
               background: 'linear-gradient(45deg, #005c90 30%, #0288d1 90%)',
               '&:hover': {
                 background: 'linear-gradient(45deg, #004b75 30%, #0277bd 90%)',
-              }
+              },
             }}
           >
             Pay Now
