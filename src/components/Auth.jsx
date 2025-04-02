@@ -56,11 +56,11 @@ export default function Auth() {
       >
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 4 }}>
           <img 
-            src="/logo.png" 
+            src="/subha.png" 
             alt="Subha Logo" 
             style={{ 
-              width: '180px',
-              height: '60px',
+              width: '200px',
+              height: 'auto',
               marginBottom: '20px',
               objectFit: 'contain'
             }} 
