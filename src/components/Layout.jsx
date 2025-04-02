@@ -9,7 +9,7 @@ export default function Layout() {
 
   return (
     <Box>
-      <AppBar position="static">
+      <AppBar position="static" sx={{ bgcolor: '#005c90' }}>
         <Toolbar>
           <IconButton color="inherit" onClick={() => navigate('/dashboard')}>
             <HomeIcon />

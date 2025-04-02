@@ -10,7 +10,7 @@ import Layout from './components/Layout';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#1a237e', // Navy blue shade
+      main: '#005c90',
     },
     secondary: {
       main: '#0d47a1',

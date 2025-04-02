@@ -101,7 +101,16 @@ export default function InvestmentFlow() {
                     setSelectedProject(project);
                     handleNext();
                   }}
-                  sx={{ cursor: 'pointer' }}
+                  sx={{ 
+                    cursor: 'pointer',
+                    transition: '0.3s',
+                    border: selectedProject?.name === project.name ? '2px solid #005c90' : '1px solid rgba(0,0,0,0.12)',
+                    '&:hover': {
+                      transform: 'translateY(-4px)',
+                      boxShadow: 3,
+                      borderColor: '#005c90'
+                    }
+                  }}
                 >
                   <CardContent>
                     <Typography variant="h6">{project.name}</Typography>
