@@ -59,10 +59,11 @@ export default function Auth() {
             src="/subha.png" 
             alt="Subha Logo" 
             style={{ 
-              width: '200px',
-              height: 'auto',
+              width: '180px',
+              height: '60px',
               marginBottom: '20px',
-              objectFit: 'contain'
+              objectFit: 'contain',
+              filter: 'none'
             }} 
           />
           <Typography variant="h4" sx={{ color: '#005c90', fontWeight: 600, letterSpacing: '1px' }}>

@@ -15,7 +15,7 @@ export default function Layout() {
             <HomeIcon />
           </IconButton>
           <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
-            <img src="/logo.png" alt="Subha Logo" style={{ height: '40px', marginRight: '10px', filter: 'brightness(0) invert(1)' }} />
+            <img src="/subha.png" alt="Subha Logo" style={{ height: '40px', marginRight: '10px', filter: 'brightness(0) invert(1)' }} />
             <Typography variant="h6" component="div">
               Invest
             </Typography>
