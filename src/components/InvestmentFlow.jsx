@@ -78,10 +78,7 @@ export default function InvestmentFlow() {
 
   return (
     <Box sx={{ maxWidth: '900px', mx: 'auto', width: '100%', px: { xs: 2, sm: 3 }, mt: 3 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-        <AddIcon sx={{ mr: 1, color: '#005c90' }} />
-        <Typography variant="h4">New Investment</Typography>
-      </Box> {/* Added page heading */}
+      <Typography variant="h4" sx={{ mb: 2, color: '#005c90' }}>New Investment</Typography>
       <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
         {steps.map((label) => (
           <Step key={label}>
