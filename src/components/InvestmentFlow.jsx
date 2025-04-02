@@ -76,7 +76,7 @@ export default function InvestmentFlow() {
   };
 
   return (
-    <Box sx={{ maxWidth: '900px', mx: 'auto', width: '100%', px: { xs: 2, sm: 3 }, mt: 3 }}>
+    <Box sx={{ maxWidth: '900px', mx: 'auto', width: '100%', px: { xs: 2, sm: 3 }, mt: 3, bgcolor: '#f8f9fa' }}>
       <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
         {steps.map((label) => (
           <Step key={label}>
@@ -247,64 +247,64 @@ export default function InvestmentFlow() {
             >
               Proceed To Payment
             </Button>
-
-            {showSummary && (
-              <Box sx={{ mt: 4 }}>
-                <Typography variant="h6" gutterBottom sx={{ color: '#005c90' }}>
-                  Investment Summary
-                </Typography>
-                
-                {selectedProject && (
-                  <Card sx={{ mb: 2 }}>
-                    <CardContent>
-                      <Typography variant="h6">{selectedProject.name}</Typography>
-                      <Typography color="text.secondary">{selectedProject.location}</Typography>
-                      <Typography>Returns: {selectedProject.returns}</Typography>
-                      <Typography>Lock-in: {selectedProject.lockIn}</Typography>
-                    </CardContent>
-                  </Card>
-                )}
-
-                {selectedModel && (
-                  <Card sx={{ mb: 2 }}>
-                    <CardContent>
-                      <Typography variant="h6">{selectedModel.name}</Typography>
-                      <Typography>ROI: {selectedModel.roi}</Typography>
-                      <Typography>Lock-in: {selectedModel.lockIn}</Typography>
-                    </CardContent>
-                  </Card>
-                )}
-
-                <Card sx={{ mb: 3 }}>
-                  <CardContent>
-                    <Typography variant="h6">Selected Slots/Shares</Typography>
-                    <Typography>Number of Slots: {slots}</Typography>
-                    <Typography>Quantity per Slot: {slots}</Typography>
-                    <Typography variant="h6" sx={{ mt: 2, color: '#005c90' }}>
-                      Total Investment: ₹{slots * 100000}
-                    </Typography>
-                  </CardContent>
-                </Card>
-
-                <Button 
-                  fullWidth 
-                  variant="contained" 
-                  color="primary"
-                  sx={{
-                    py: 1.5,
-                    background: 'linear-gradient(45deg, #005c90 30%, #0288d1 90%)',
-                    '&:hover': {
-                      background: 'linear-gradient(45deg, #004b75 30%, #0277bd 90%)',
-                    }
-                  }}
-                >
-                  Pay Now
-                </Button>
-              </Box>
-            )}
           </Box>
         </AccordionDetails>
       </Accordion>
+
+      {showSummary && (
+        <Box sx={{ mt: 4, p: 3, bgcolor: 'white', borderRadius: 1, boxShadow: 1 }}>
+          <Typography variant="h6" gutterBottom sx={{ color: '#005c90' }}>
+            Investment Summary
+          </Typography>
+          
+          {selectedProject && (
+            <Card sx={{ mb: 2 }}>
+              <CardContent>
+                <Typography variant="h6">{selectedProject.name}</Typography>
+                <Typography color="text.secondary">{selectedProject.location}</Typography>
+                <Typography>Returns: {selectedProject.returns}</Typography>
+                <Typography>Lock-in: {selectedProject.lockIn}</Typography>
+              </CardContent>
+            </Card>
+          )}
+
+          {selectedModel && (
+            <Card sx={{ mb: 2 }}>
+              <CardContent>
+                <Typography variant="h6">{selectedModel.name}</Typography>
+                <Typography>ROI: {selectedModel.roi}</Typography>
+                <Typography>Lock-in: {selectedModel.lockIn}</Typography>
+              </CardContent>
+            </Card>
+          )}
+
+          <Card sx={{ mb: 3 }}>
+            <CardContent>
+              <Typography variant="h6">Selected Slots/Shares</Typography>
+              <Typography>Number of Slots: {slots}</Typography>
+              <Typography>Quantity per Slot: {slots}</Typography>
+              <Typography variant="h6" sx={{ mt: 2, color: '#005c90' }}>
+                Total Investment: ₹{slots * 100000}
+              </Typography>
+            </CardContent>
+          </Card>
+
+          <Button 
+            fullWidth 
+            variant="contained" 
+            color="primary"
+            sx={{
+              py: 1.5,
+              background: 'linear-gradient(45deg, #005c90 30%, #0288d1 90%)',
+              '&:hover': {
+                background: 'linear-gradient(45deg, #004b75 30%, #0277bd 90%)',
+              }
+            }}
+          >
+            Pay Now
+          </Button>
+        </Box>
+      )}
     </Box>
   );
 }
