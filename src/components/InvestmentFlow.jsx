@@ -75,7 +75,7 @@ export default function InvestmentFlow() {
   };
 
   return (
-    <Box>
+    <Box sx={{ maxWidth: '900px', mx: 'auto', width: '100%', px: { xs: 2, sm: 3 } }}>
       <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
         {steps.map((label) => (
           <Step key={label}>
