@@ -269,7 +269,7 @@ export default function InvestmentFlow() {
             maxHeight: { md: 'calc(100vh - 120px)' },
             overflowY: 'auto'
           }}>
-            <Box sx={{ p: 3, bgcolor: 'white', borderRadius: 1, boxShadow: 1 }}>
+            <Box sx={{ p: 3, bgcolor: '#f5f5f5', borderRadius: 1, boxShadow: 1 }}>
               <Typography variant="h6" gutterBottom sx={{ color: '#005c90' }}>
                 Investment Summary
               </Typography>

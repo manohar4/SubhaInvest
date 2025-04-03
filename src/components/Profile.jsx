@@ -1,7 +1,14 @@
 
-import { Box, Typography, Paper, List, ListItem, ListItemText, Divider } from '@mui/material';
+import { Box, Typography, Paper, List, ListItem, ListItemText, Divider, Button } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 export default function Profile() {
+  const navigate = useNavigate();
+  
+  const handleLogout = () => {
+    // Add any logout logic here (clear tokens etc)
+    navigate('/');
+  };
   // Mock user data - in a real app, this would come from a backend
   const userData = {
     name: "John Doe",
@@ -32,6 +39,21 @@ export default function Profile() {
         <Typography variant="body1">Phone: {userData.phone}</Typography>
       </Paper>
 
+      <Button 
+        variant="contained" 
+        color="primary" 
+        onClick={handleLogout}
+        sx={{ 
+          mb: 3, 
+          width: '100%',
+          background: 'linear-gradient(45deg, #005c90 30%, #0288d1 90%)',
+          '&:hover': {
+            background: 'linear-gradient(45deg, #004b75 30%, #0277bd 90%)',
+          }
+        }}
+      >
+        Logout
+      </Button>
       <Paper elevation={3} sx={{ p: 3 }}>
         <Typography variant="h5" gutterBottom>My Investments</Typography>
         <List>
