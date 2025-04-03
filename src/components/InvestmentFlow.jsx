@@ -77,7 +77,9 @@ export default function InvestmentFlow() {
   };
 
   return (
-    <Box sx={{ maxWidth: '900px', mx: 'auto', width: '100%', px: { xs: 2, sm: 3 }, mt: 3 }}>
+    <Box sx={{ maxWidth: '1200px', mx: 'auto', width: '100%', px: { xs: 2, sm: 3 }, mt: 3 }}>
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={showSummary ? 8 : 12}>
       <Typography variant="h4" sx={{ mb: 2, color: '#005c90' }}>New Investment</Typography>
       <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
         {steps.map((label) => (
@@ -256,9 +258,10 @@ export default function InvestmentFlow() {
           </Box>
         </AccordionDetails>
       </Accordion>
-
-      {showSummary && (
-        <Box sx={{ mt: 4, p: 3, bgcolor: 'white', borderRadius: 1, boxShadow: 1 }}>
+        </Grid>
+        {showSummary && (
+          <Grid item xs={12} md={4}>
+            <Box sx={{ p: 3, bgcolor: 'white', borderRadius: 1, boxShadow: 1, position: 'sticky', top: 20 }}>
           <Typography variant="h6" gutterBottom sx={{ color: '#005c90' }}>
             Investment Summary
           </Typography>
@@ -309,8 +312,10 @@ export default function InvestmentFlow() {
           >
             Pay Now
           </Button>
-        </Box>
-      )}
+            </Box>
+          </Grid>
+        )}
+      </Grid>
     </Box>
   );
 }
