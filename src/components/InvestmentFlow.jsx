@@ -67,7 +67,7 @@ export default function InvestmentFlow() {
   const [selectedProject, setSelectedProject] = useState(null);
   const [selectedModel, setSelectedModel] = useState(null);
   const [slots, setSlots] = useState(1);
-  const [quantity, setQuantity] = useState(1); // Added state for quantity per slot
+  const [quantity, setQuantity] = useState(1);
   const [showSummary, setShowSummary] = useState(false);
 
   const steps = ['Select Project', 'Choose Model', 'Slots & Payment'];
@@ -76,242 +76,243 @@ export default function InvestmentFlow() {
     setActiveStep((prev) => prev + 1);
   };
 
+  const hasInvestment = selectedProject && selectedModel;
+
   return (
     <Box sx={{ maxWidth: '1200px', mx: 'auto', width: '100%', px: { xs: 2, sm: 3 }, mt: 3 }}>
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={showSummary ? 8 : 12}>
-      <Typography variant="h4" sx={{ mb: 2, color: '#005c90' }}>New Investment</Typography>
-      <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
-        {steps.map((label) => (
-          <Step key={label}>
-            <StepLabel>{label}</StepLabel>
-          </Step>
-        ))}
-      </Stepper>
+      <Grid container spacing={3} justifyContent={hasInvestment ? 'space-between' : 'center'}>
+        <Grid item xs={12} md={showSummary ? 8 : (hasInvestment ? 8 : 12)}>
+          <Typography variant="h4" sx={{ mb: 2, color: '#005c90' }}>New Investment</Typography>
+          <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
+            {steps.map((label) => (
+              <Step key={label}>
+                <StepLabel>{label}</StepLabel>
+              </Step>
+            ))}
+          </Stepper>
 
-      <Accordion
-        expanded={activeStep === 0}
-        onChange={() => setActiveStep(0)}
-        sx={{ bgcolor: '#EEEEEE' }} // Added background color to Accordion
-      >
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <ApartmentIcon sx={{ mr: 2 }} />
-          <Typography>Project Selection</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Grid container spacing={3}>
-            {projects.map((project) => (
-              <Grid item xs={12} md={6} key={project.name}>
-                <Card
-                  variant={selectedProject?.name === project.name ? 'elevation' : 'outlined'}
-                  onClick={() => {
-                    setSelectedProject(project);
-                    handleNext();
-                  }}
+          <Accordion
+            expanded={activeStep === 0}
+            onChange={() => setActiveStep(0)}
+            sx={{ bgcolor: '#EEEEEE', mb: '1px' }}
+          >
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <ApartmentIcon sx={{ mr: 2 }} />
+              <Typography>Project Selection</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Grid container spacing={3}>
+                {projects.map((project) => (
+                  <Grid item xs={12} md={6} key={project.name}>
+                    <Card
+                      variant={selectedProject?.name === project.name ? 'elevation' : 'outlined'}
+                      onClick={() => {
+                        setSelectedProject(project);
+                        handleNext();
+                      }}
+                      sx={{
+                        cursor: 'pointer',
+                        transition: '0.3s',
+                        border: selectedProject?.name === project.name ? '2px solid #005c90' : '1px solid rgba(0,0,0,0.12)',
+                        position: 'relative',
+                        '&:hover': {
+                          transform: 'translateY(-4px)',
+                          boxShadow: 3,
+                          borderColor: '#005c90',
+                        },
+                      }}
+                    >
+                      {selectedProject?.name === project.name && (
+                        <CheckCircleIcon
+                          sx={{
+                            position: 'absolute',
+                            top: 10,
+                            right: 10,
+                            color: '#005c90',
+                            bgcolor: 'white',
+                            borderRadius: '50%',
+                          }}
+                        />
+                      )}
+                      <CardContent>
+                        <Typography variant="h6">{project.name}</Typography>
+                        <Typography color="text.secondary">{project.location}</Typography>
+                        <Typography>Min Investment: {project.minInvestment}</Typography>
+                        <Typography>Returns: {project.returns}</Typography>
+                        <Typography>Lock-in: {project.lockIn}</Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            </AccordionDetails>
+          </Accordion>
+
+          <Accordion
+            expanded={activeStep === 1}
+            onChange={() => selectedProject && setActiveStep(1)}
+            sx={{ bgcolor: '#EEEEEE', mb: '1px' }}
+          >
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <AccountBalanceIcon sx={{ mr: 2 }} />
+              <Typography>Investment Model</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Grid container spacing={3}>
+                {investmentModels.map((model) => (
+                  <Grid item xs={12} md={4} key={model.name}>
+                    <Card
+                      variant={selectedModel?.name === model.name ? 'elevation' : 'outlined'}
+                      onClick={() => {
+                        setSelectedModel(model);
+                        handleNext();
+                      }}
+                      sx={{
+                        cursor: 'pointer',
+                        transition: '0.3s',
+                        border: selectedModel?.name === model.name ? '2px solid #005c90' : '1px solid rgba(0,0,0,0.12)',
+                        position: 'relative',
+                        '&:hover': {
+                          transform: 'translateY(-4px)',
+                          boxShadow: 3,
+                          borderColor: '#005c90',
+                        },
+                      }}
+                    >
+                      {selectedModel?.name === model.name && (
+                        <CheckCircleIcon
+                          sx={{
+                            position: 'absolute',
+                            top: 10,
+                            right: 10,
+                            color: '#005c90',
+                            bgcolor: 'white',
+                            borderRadius: '50%',
+                          }}
+                        />
+                      )}
+                      <CardContent>
+                        <Typography variant="h6">{model.name}</Typography>
+                        <Typography>Min Investment: {model.minInvestment}</Typography>
+                        <Typography>ROI: {model.roi}</Typography>
+                        <Typography>Lock-in: {model.lockIn}</Typography>
+                        <Typography>Available Slots: {model.slots}</Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            </AccordionDetails>
+          </Accordion>
+
+          <Accordion
+            expanded={activeStep === 2}
+            onChange={() => selectedModel && setActiveStep(2)}
+            sx={{ bgcolor: '#EEEEEE' }}
+          >
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <PaymentIcon sx={{ mr: 2 }} />
+              <Typography>Select Lot/Share</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Box sx={{ maxWidth: 600, mx: 'auto' }}>
+                <Grid container spacing={2} sx={{ mb: 3 }}>
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      fullWidth
+                      type="number"
+                      label="Number of Slots"
+                      value={slots}
+                      onChange={(e) => setSlots(parseInt(e.target.value, 10) || 0)}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      fullWidth
+                      type="number"
+                      label="Quantity per Slot"
+                      value={quantity}
+                      onChange={(e) => setQuantity(parseInt(e.target.value, 10) || 0)}
+                    />
+                  </Grid>
+                </Grid>
+
+                <Typography variant="h6" sx={{ mb: 3 }}>
+                  Total Investment: ₹{slots * quantity * 100000}
+                </Typography>
+
+                <Button
+                  fullWidth
+                  variant="contained"
+                  color="primary"
+                  onClick={() => setShowSummary(true)}
                   sx={{
-                    cursor: 'pointer',
-                    transition: '0.3s',
-                    border: selectedProject?.name === project.name ? '2px solid #005c90' : '1px solid rgba(0,0,0,0.12)',
-                    position: 'relative',
+                    py: 1.5,
+                    background: 'linear-gradient(45deg, #005c90 30%, #0288d1 90%)',
                     '&:hover': {
-                      transform: 'translateY(-4px)',
-                      boxShadow: 3,
-                      borderColor: '#005c90',
+                      background: 'linear-gradient(45deg, #004b75 30%, #0277bd 90%)',
                     },
                   }}
                 >
-                  {selectedProject?.name === project.name && (
-                    <CheckCircleIcon
-                      sx={{
-                        position: 'absolute',
-                        top: 10,
-                        right: 10,
-                        color: '#005c90',
-                        bgcolor: 'white',
-                        borderRadius: '50%',
-                      }}
-                    />
-                  )}
-                  <CardContent>
-                    <Typography variant="h6">{project.name}</Typography>
-                    <Typography color="text.secondary">{project.location}</Typography>
-                    <Typography>Min Investment: {project.minInvestment}</Typography>
-                    <Typography>Returns: {project.returns}</Typography>
-                    <Typography>Lock-in: {project.lockIn}</Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-        </AccordionDetails>
-      </Accordion>
-
-      <Accordion
-        expanded={activeStep === 1}
-        onChange={() => selectedProject && setActiveStep(1)}
-        sx={{ bgcolor: '#EEEEEE' }} // Added background color to Accordion
-      >
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <AccountBalanceIcon sx={{ mr: 2 }} />
-          <Typography>Investment Model</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Grid container spacing={3}>
-            {investmentModels.map((model) => (
-              <Grid item xs={12} md={4} key={model.name}>
-                <Card
-                  variant={selectedModel?.name === model.name ? 'elevation' : 'outlined'}
-                  onClick={() => {
-                    setSelectedModel(model);
-                    handleNext();
-                  }}
-                  sx={{
-                    cursor: 'pointer',
-                    transition: '0.3s',
-                    border: selectedModel?.name === model.name ? '2px solid #005c90' : '1px solid rgba(0,0,0,0.12)',
-                    position: 'relative',
-                    '&:hover': {
-                      transform: 'translateY(-4px)',
-                      boxShadow: 3,
-                      borderColor: '#005c90',
-                    },
-                  }}
-                >
-                  {selectedModel?.name === model.name && (
-                    <CheckCircleIcon
-                      sx={{
-                        position: 'absolute',
-                        top: 10,
-                        right: 10,
-                        color: '#005c90',
-                        bgcolor: 'white',
-                        borderRadius: '50%',
-                      }}
-                    />
-                  )}
-                  <CardContent>
-                    <Typography variant="h6">{model.name}</Typography>
-                    <Typography>Min Investment: {model.minInvestment}</Typography>
-                    <Typography>ROI: {model.roi}</Typography>
-                    <Typography>Lock-in: {model.lockIn}</Typography>
-                    <Typography>Available Slots: {model.slots}</Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-        </AccordionDetails>
-      </Accordion>
-
-      <Accordion
-        expanded={activeStep === 2}
-        onChange={() => selectedModel && setActiveStep(2)}
-        sx={{ bgcolor: '#EEEEEE' }} // Added background color to Accordion
-
-      >
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <PaymentIcon sx={{ mr: 2 }} />
-          <Typography>Select Lot/Share</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Box sx={{ maxWidth: 600, mx: 'auto' }}>
-            <Grid container spacing={2} sx={{ mb: 3 }}>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  type="number"
-                  label="Number of Slots"
-                  value={slots}
-                  onChange={(e) => setSlots(parseInt(e.target.value, 10) || 0)} //added parseInt and default 0
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  type="number"
-                  label="Quantity per Slot"
-                  value={quantity}
-                  onChange={(e) => setQuantity(parseInt(e.target.value, 10) || 0)} //added parseInt and default 0
-                />
-              </Grid>
-            </Grid>
-
-            <Typography variant="h6" sx={{ mb: 3 }}>
-              Total Investment: ₹{slots * quantity * 100000}
-            </Typography>
-
-            <Button
-              fullWidth
-              variant="contained"
-              color="primary"
-              onClick={() => setShowSummary(true)}
-              sx={{
-                py: 1.5,
-                background: 'linear-gradient(45deg, #005c90 30%, #0288d1 90%)',
-                '&:hover': {
-                  background: 'linear-gradient(45deg, #004b75 30%, #0277bd 90%)',
-                },
-              }}
-            >
-              Proceed To Payment
-            </Button>
-          </Box>
-        </AccordionDetails>
-      </Accordion>
+                  Proceed To Payment
+                </Button>
+              </Box>
+            </AccordionDetails>
+          </Accordion>
         </Grid>
         {showSummary && (
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={4} >
             <Box sx={{ p: 3, bgcolor: 'white', borderRadius: 1, boxShadow: 1, position: 'sticky', top: 20 }}>
-          <Typography variant="h6" gutterBottom sx={{ color: '#005c90' }}>
-            Investment Summary
-          </Typography>
-
-          {selectedProject && (
-            <Card sx={{ mb: 2 }}>
-              <CardContent>
-                <Typography variant="h6">{selectedProject.name}</Typography>
-                <Typography color="text.secondary">{selectedProject.location}</Typography>
-                <Typography>Returns: {selectedProject.returns}</Typography>
-                <Typography>Lock-in: {selectedProject.lockIn}</Typography>
-              </CardContent>
-            </Card>
-          )}
-
-          {selectedModel && (
-            <Card sx={{ mb: 2 }}>
-              <CardContent>
-                <Typography variant="h6">{selectedModel.name}</Typography>
-                <Typography>ROI: {selectedModel.roi}</Typography>
-                <Typography>Lock-in: {selectedModel.lockIn}</Typography>
-              </CardContent>
-            </Card>
-          )}
-
-          <Card sx={{ mb: 3 }}>
-            <CardContent>
-              <Typography variant="h6">Selected Slots/Shares</Typography>
-              <Typography>Number of Slots: {slots}</Typography>
-              <Typography>Quantity per Slot: {quantity}</Typography>
-              <Typography variant="h6" sx={{ mt: 2, color: '#005c90' }}>
-                Total Investment: ₹{slots * quantity * 100000}
+              <Typography variant="h6" gutterBottom sx={{ color: '#005c90' }}>
+                Investment Summary
               </Typography>
-            </CardContent>
-          </Card>
 
-          <Button
-            fullWidth
-            variant="contained"
-            color="primary"
-            sx={{
-              py: 1.5,
-              background: 'linear-gradient(45deg, #005c90 30%, #0288d1 90%)',
-              '&:hover': {
-                background: 'linear-gradient(45deg, #004b75 30%, #0277bd 90%)',
-              },
-            }}
-          >
-            Pay Now
-          </Button>
+              {selectedProject && (
+                <Card sx={{ mb: 2 }}>
+                  <CardContent>
+                    <Typography variant="h6">{selectedProject.name}</Typography>
+                    <Typography color="text.secondary">{selectedProject.location}</Typography>
+                    <Typography>Returns: {selectedProject.returns}</Typography>
+                    <Typography>Lock-in: {selectedProject.lockIn}</Typography>
+                  </CardContent>
+                </Card>
+              )}
+
+              {selectedModel && (
+                <Card sx={{ mb: 2 }}>
+                  <CardContent>
+                    <Typography variant="h6">{selectedModel.name}</Typography>
+                    <Typography>ROI: {selectedModel.roi}</Typography>
+                    <Typography>Lock-in: {selectedModel.lockIn}</Typography>
+                  </CardContent>
+                </Card>
+              )}
+
+              <Card sx={{ mb: 3 }}>
+                <CardContent>
+                  <Typography variant="h6">Selected Slots/Shares</Typography>
+                  <Typography>Number of Slots: {slots}</Typography>
+                  <Typography>Quantity per Slot: {quantity}</Typography>
+                  <Typography variant="h6" sx={{ mt: 2, color: '#005c90' }}>
+                    Total Investment: ₹{slots * quantity * 100000}
+                  </Typography>
+                </CardContent>
+              </Card>
+
+              <Button
+                fullWidth
+                variant="contained"
+                color="primary"
+                sx={{
+                  py: 1.5,
+                  background: 'linear-gradient(45deg, #005c90 30%, #0288d1 90%)',
+                  '&:hover': {
+                    background: 'linear-gradient(45deg, #004b75 30%, #0277bd 90%)',
+                  },
+                }}
+              >
+                Pay Now
+              </Button>
             </Box>
           </Grid>
         )}
