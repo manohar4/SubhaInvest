@@ -80,8 +80,8 @@ export default function InvestmentFlow() {
 
   return (
     <Box sx={{ maxWidth: '1200px', mx: 'auto', width: '100%', px: { xs: 2, sm: 3 }, mt: 3 }}>
-      <Grid container spacing={3} justifyContent={hasInvestment ? 'space-between' : 'center'}>
-        <Grid item xs={12} md={showSummary ? 8 : (hasInvestment ? 8 : 12)}>
+      <Grid container spacing={3} sx={{ position: 'relative' }}>
+        <Grid item xs={12} md={showSummary ? 8 : 12}>
           <Typography variant="h4" sx={{ mb: 2, color: '#005c90' }}>New Investment</Typography>
           <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
             {steps.map((label) => (
@@ -261,8 +261,15 @@ export default function InvestmentFlow() {
           </Accordion>
         </Grid>
         {showSummary && (
-          <Grid item xs={12} md={4} >
-            <Box sx={{ p: 3, bgcolor: 'white', borderRadius: 1, boxShadow: 1, position: 'sticky', top: 20 }}>
+          <Grid item xs={12} md={4} sx={{ 
+            position: { md: 'fixed' }, 
+            right: { md: '24px' }, 
+            width: { md: '350px' },
+            top: { md: '100px' },
+            maxHeight: { md: 'calc(100vh - 120px)' },
+            overflowY: 'auto'
+          }}>
+            <Box sx={{ p: 3, bgcolor: 'white', borderRadius: 1, boxShadow: 1 }}>
               <Typography variant="h6" gutterBottom sx={{ color: '#005c90' }}>
                 Investment Summary
               </Typography>
