@@ -117,7 +117,7 @@ export default function InvestmentFlow() {
                         position: 'relative',
                         '&:hover': {
                           transform: 'translateY(-4px)',
-                          boxShadow: 3,
+                          boxShadow: 1,
                           borderColor: '#005c90',
                         },
                       }}
@@ -174,7 +174,7 @@ export default function InvestmentFlow() {
                         position: 'relative',
                         '&:hover': {
                           transform: 'translateY(-4px)',
-                          boxShadow: 3,
+                          boxShadow: 1,
                           borderColor: '#005c90',
                         },
                       }}

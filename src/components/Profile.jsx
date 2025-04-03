@@ -33,7 +33,7 @@ export default function Profile() {
 
   return (
     <Box sx={{ maxWidth: 800, mx: 'auto', py: 4 }}>
-      <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
+      <Paper elevation={1} sx={{ p: 3, mb: 4 }}>
         <Typography variant="h5" gutterBottom>Profile Details</Typography>
         <Typography variant="body1">Name: {userData.name}</Typography>
         <Typography variant="body1">Phone: {userData.phone}</Typography>
@@ -54,7 +54,7 @@ export default function Profile() {
       >
         Logout
       </Button>
-      <Paper elevation={3} sx={{ p: 3 }}>
+      <Paper elevation={1} sx={{ p: 3 }}>
         <Typography variant="h5" gutterBottom>My Investments</Typography>
         <List>
           {userData.investments.map((investment, index) => (

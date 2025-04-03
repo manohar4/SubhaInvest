@@ -39,7 +39,7 @@ export default function Dashboard() {
                 flexDirection: 'column',
                 '&:hover': {
                   transform: 'translateY(-8px)',
-                  boxShadow: 6,
+                  boxShadow: 2,
                 }
               }}
               onClick={() => navigate('/invest')}
