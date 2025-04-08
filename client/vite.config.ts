@@ -20,6 +20,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
+      
       "@": path.resolve(import.meta.dirname, "src"),
       "@shared": path.resolve(import.meta.dirname, "../shared"),
       "@assets": path.resolve(import.meta.dirname, "../attached_assets"),
@@ -28,6 +29,9 @@ export default defineConfig({
   build: {
     outDir: "dist", // stays inside client/
     emptyOutDir: true,
+    rollupOptions: {
+      external: ['@/components/ui/toaster'],
+    },
   },
 });
 
