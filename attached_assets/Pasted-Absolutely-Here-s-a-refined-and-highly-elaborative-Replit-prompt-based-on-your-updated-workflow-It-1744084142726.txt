@@ -1,0 +1,176 @@
+Absolutely! Here’s a refined and highly elaborative Replit prompt based on your updated workflow. It’s designed to ensure any developer or AI tool building this on Replit understands every feature, page flow, and behavior clearly and error-free. The prompt covers all UI/UX expectations, logic, and best practices.
+
+⸻
+
+✅ Replit Prompt: Build a Responsive Real Estate Investment App (Updated Workflow)
+
+⸻
+
+📌 Project Summary:
+
+Create a mobile-first responsive real estate investment web app using React.js + TailwindCSS. The app allows users to log in with OTP, explore real estate projects, go through a 4-step guided investment journey, save progress as draft, and track past or ongoing investments. The interface should be clean, intuitive, and interactive with clear CTAs and progressive step navigation.
+
+⸻
+
+🔐 Authentication Flow:
+	•	Login Page
+	•	Users log in with their mobile number.
+	•	OTP Verification (use a mock flow with a timer and input field).
+	•	On success, users are prompted to enter name and proceed.
+	•	Redirect to Dashboard after login.
+
+⸻
+
+🏠 Dashboard (Main Page After Login)
+
+Section: “Ready to grow your portfolio?”
+	•	Replace “Start New Investment” button with:
+	•	Two Project Cards side-by-side (responsive):
+	•	Project: Aura
+	•	Codename: Aura
+	•	Location: Bangalore
+	•	Minimum Investment: ₹1 Lakh
+	•	Estimated Returns: 14% p.a.
+	•	Lock-in Period: 3 years
+	•	CTA: “Start Investment”
+	•	Project: Subha White Waters
+	•	Location: Bangalore
+	•	Minimum Investment: ₹1.5 Lakh
+	•	Estimated Returns: 16% p.a.
+	•	Lock-in Period: 4 years
+	•	CTA: “Start Investment”
+	•	On clicking “Start Investment”, navigate to /invest/:projectId
+
+⸻
+
+🚀 4-Step Investment Flow Page (/invest/:projectId)
+
+🧭 Persistent UI Element:
+	•	Show a stepper at top (1 → 2 → 3 → 4) indicating progress. Use visual cues like check marks, highlights, and numbered circles.
+
+⸻
+
+Step 1: Explore Project / Project Details
+	•	Show detailed info about selected project:
+	•	Project Name, Location, High-quality image, Google Map Embed (optional)
+	•	Description
+	•	KPI Cards:
+	•	Min Investment
+	•	Expected ROI
+	•	Lock-in Period
+	•	Project Size (Acres)
+	•	Developer Name
+	•	Project Timeline (Start-End)
+	•	Project Stage (Pre-launch/Ongoing)
+	•	Bottom Buttons:
+	•	Right: Select Investment Model
+	•	Step auto-saves draft progress on button click.
+
+⸻
+
+Step 2: Choose Investment Model
+	•	Display 3 vertically stacked pricing-style cards (comparison-style):
+	•	Each card should include:
+	•	Model Name: Gold / Platinum / Virtual
+	•	Min Investment
+	•	Expected ROI
+	•	Lock-in Period
+	•	Slots Available
+	•	Risk Level
+	•	Suitability (Short-Term, Long-Term)
+	•	Highlight selected card with a border or checkmark.
+	•	Interaction:
+	•	On select, highlight that card
+	•	At bottom:
+	•	Left: Back
+	•	Right: Choose Slots
+	•	Save selection as part of draft
+
+⸻
+
+Step 3: Choose Slots
+	•	Layout includes:
+	•	Input: Number of Slots (Stepper control: + / -)
+	•	Input: Quantity per Slot (Stepper)
+	•	Auto-calculate total investment = Min Investment * Slots * Quantity
+	•	Show total in bold below inputs.
+	•	Buttons:
+	•	Left: Back
+	•	Right: Continue
+
+⸻
+
+Step 4: Investment Summary
+	•	Display all selected details:
+	•	Project Name
+	•	Model Selected
+	•	Number of Slots & Quantity
+	•	Final Investment Amount
+	•	Lock-in Period
+	•	Expected Returns
+	•	Estimated Maturity Value (calculate if needed)
+	•	Buttons:
+	•	Left: Back
+	•	Right:
+	•	Pay Now
+	•	Contact Our Sales
+
+On “Contact Our Sales”:
+	•	Show Success Message:
+
+🎉 Your investment process is successfully started. 
+Our sales team will reach out to you shortly.
+You can view this application anytime under "My Investments".
+
+
+
+On “Pay Now”:
+	•	Mock payment flow or Razorpay test integration.
+
+⸻
+
+💾 Save as Draft Functionality
+	•	At each step, save the user’s progress (localStorage or DB).
+	•	If the user returns later, show a modal like:
+
+You have an unfinished investment draft for Project Aura.
+Would you like to continue?
+[Continue Draft] [Discard]
+
+
+
+⸻
+
+🧾 My Investments Page
+	•	A profile section to show:
+	•	User Name, Phone Number
+	•	List of:
+	•	Ongoing Investments
+	•	Draft Investments (Resume/Delete)
+	•	Completed Investments
+	•	Each entry shows project details, status (Draft, In Progress, Completed), and investment summary.
+
+⸻
+
+📦 Technologies to Use
+	•	Frontend: React.js (Vite), TailwindCSS
+	•	Routing: React Router
+	•	State Management: Context API or Redux
+	•	Auth: Mock OTP via React Context or Firebase Auth
+	•	Persistence: localStorage or Firebase Firestore
+	•	Payment: Mock Razorpay or Stripe
+	•	Optional: Framer Motion for transitions, HeadlessUI for stepper
+
+⸻
+
+✅ Key UX Requirements
+	•	Mobile-first design (but fully responsive)
+	•	Always-visible progress indicator for investment steps
+	•	Clear CTAs, legible fonts, and touch-friendly inputs
+	•	Back/Continue always available at the bottom
+	•	Autosave on every step
+	•	Friendly messages and confirmations
+
+⸻
+
+Would you like me to generate the React boilerplate or UI wireframe for this next?
