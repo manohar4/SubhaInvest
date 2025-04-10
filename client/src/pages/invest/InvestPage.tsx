@@ -8,6 +8,7 @@ import BottomNav from "@/components/layout/BottomNav";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/lib/utils";
+import paymentPlan from "@/assets/paymentPlan.png"
 import { CheckCircle2, Check, ArrowLeft, ArrowRight, Building2, MapPin, Calendar, Banknote, PercentCircle, Clock, Plus, Minus } from "lucide-react";
 
 interface InvestmentDraft {
@@ -21,7 +22,7 @@ interface InvestmentDraft {
 const STEPS = [
   "Explore Project",
   "Choose Investment Model",
-  "Choose Slots",
+  "Select Unit/Sqft/Amount",
   "Investment Summary"
 ];
 
@@ -126,28 +127,34 @@ export default function InvestPage() {
           id: "gold",
           name: "Gold",
           minInvestment: 100000,
+          maxInvestment: 900000,
           roi: 12,
           lockInPeriod: 3,
           availableSlots: 10,
-          projectId: pid
+          projectId: pid,
+          paymentPlan: paymentPlan
         },
         {
           id: "platinum",
           name: "Platinum",
           minInvestment: 150000,
+          maxInvestment: 900000,
           roi: 14,
           lockInPeriod: 4,
           availableSlots: 5,
-          projectId: pid
+          projectId: pid,
+          paymentPlan: paymentPlan
         },
         {
           id: "virtual",
           name: "Virtual",
           minInvestment: 75000,
+          maxInvestment: 900000,
           roi: 10,
           lockInPeriod: 2,
           availableSlots: 15,
-          projectId: pid
+          projectId: pid,
+          paymentPlan: paymentPlan
         }
       ],
       'subha': [
@@ -155,57 +162,34 @@ export default function InvestPage() {
           id: "gold",
           name: "Gold",
           minInvestment: 75000,
+          maxInvestment: 900000,
           roi: 12,
           lockInPeriod: 3,
           availableSlots: 10,
-          projectId: pid
+          projectId: pid,
+          paymentPlan: paymentPlan
         },
         {
           id: "platinum",
           name: "Platinum",
           minInvestment: 75000,
+          maxInvestment: 900000,
           roi: 14,
           lockInPeriod: 4,
           availableSlots: 5,
-          projectId: pid
+          projectId: pid,
+          paymentPlan: paymentPlan
         },
         {
           id: "virtual",
           name: "Virtual",
           minInvestment: 75000,
+          maxInvestment: 900000,
           roi: 10,
           lockInPeriod: 2,
           availableSlots: 15,
-          projectId: pid
-        }
-      ],
-      'grand-courtyard': [
-        {
-          id: "gold",
-          name: "Gold",
-          minInvestment: 200000,
-          roi: 15,
-          lockInPeriod: 5,
-          availableSlots: 6,
-          projectId: pid
-        },
-        {
-          id: "platinum",
-          name: "Platinum",
-          minInvestment: 250000,
-          roi: 17.5,
-          lockInPeriod: 6,
-          availableSlots: 3,
-          projectId: pid
-        },
-        {
-          id: "virtual",
-          name: "Virtual",
-          minInvestment: 150000,
-          roi: 13,
-          lockInPeriod: 4,
-          availableSlots: 10,
-          projectId: pid
+          projectId: pid,
+          paymentPlan: paymentPlan
         }
       ]
     };
@@ -370,45 +354,63 @@ export default function InvestPage() {
     
     return (
       <div className="space-y-6">
-        <div className="h-64 bg-neutral-200 rounded-lg overflow-hidden relative">
-          <img 
-            src={selectedProject.image} 
-            alt={selectedProject.name} 
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-          <div className="absolute bottom-0 left-0 p-5 text-white">
-            <h2 className="text-2xl font-bold">{selectedProject.name}</h2>
-            <div className="flex items-center mt-1">
-              <MapPin className="h-4 w-4 mr-1" />
-              <p className="text-sm">{selectedProject.location}</p>
-            </div>
-          </div>
+        <div className="flex flex-wrap md:flex-nowrap gap-4">
+  {/* Left Section - Image with overlay */}
+  <div className="w-full md:w-3/5">
+    <div className="h-64 bg-neutral-200 rounded-lg overflow-hidden relative">
+      <img 
+        src={selectedProject.image} 
+        alt={selectedProject.name} 
+        className="w-full h-full object-cover"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+      <div className="absolute bottom-0 left-0 p-5 text-white">
+        <h2 className="text-2xl font-bold">{selectedProject.name}</h2>
+        <div className="flex items-center mt-1">
+          <MapPin className="h-4 w-4 mr-1" />
+          <p className="text-sm">{selectedProject.location}</p>
         </div>
+      </div>
+    </div>
+  </div>
+
+  {/* Right Section - Card */}
+  <div className="w-full md:w-2/5">
+    <Card className="border-[#e3d4bb] bg-gradient-to-br from-white to-[#f8f2ed] h-full">
+      <CardContent className="p-5 space-y-2">
+       <h4> Project Index</h4>
+        {[
+          "Total Extent",
+          "No. of Units",
+          "Configurations",
+          "Location",
+          "Approvals",
+          "Launch Timeline",
+          "Project Completion/RTM Timeline",
+        ].map((label, idx) => (
+          <div key={idx} className="flex justify-between text-sm text-[#000000]">
+            <span>{label}:</span>
+            <span className="text-[#231e1b] font-medium">--</span>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  </div>
+</div>
+
+
         
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <Card className="border-[#e3d4bb] bg-gradient-to-br from-white to-[#f8f2ed]">
-            <CardContent className="p-5">
-              <div className="flex items-start">
-                <div className="bg-[#c7ab6e] bg-opacity-10 p-2 rounded-full mr-3">
-                  <Banknote className="h-5 w-5 text-[#a3824a]" />
-                </div>
-                <div>
-                  <p className="text-sm text-[#6b5c3e] mb-1">Minimum Investment</p>
-                  <p className="text-lg font-semibold text-[#231e1b]">{formatCurrency(selectedProject.minimumInvestment)}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        
           
-          <Card className="border-[#e3d4bb] bg-gradient-to-br from-white to-[#f8f2ed]">
+          {/* <Card className="border-[#e3d4bb] bg-gradient-to-br from-white to-[#f8f2ed]">
             <CardContent className="p-5">
               <div className="flex items-start">
                 <div className="bg-[#c7ab6e] bg-opacity-10 p-2 rounded-full mr-3">
                   <PercentCircle className="h-5 w-5 text-[#a3824a]" />
                 </div>
                 <div>
-                  <p className="text-sm text-[#6b5c3e] mb-1">Estimated Returns</p>
+                  <p className="text-sm text-[#000000] mb-1">Estimated Returns</p>
                   <p className="text-lg font-semibold text-[#231e1b]">{selectedProject.estimatedReturns}% p.a.</p>
                 </div>
               </div>
@@ -422,19 +424,19 @@ export default function InvestPage() {
                   <Clock className="h-5 w-5 text-[#a3824a]" />
                 </div>
                 <div>
-                  <p className="text-sm text-[#6b5c3e] mb-1">Lock-in Period</p>
+                  <p className="text-sm text-[#000000] mb-1">Lock-in Period</p>
                   <p className="text-lg font-semibold text-[#231e1b]">{selectedProject.lockInPeriod} years</p>
                 </div>
               </div>
             </CardContent>
-          </Card>
+          </Card> */}
         </div>
         
         <div>
           <h3 className="text-lg font-semibold mb-3 text-[#231e1b]">Project Description</h3>
           <Card className="border-[#e3d4bb]">
             <CardContent className="p-5">
-              <p className="text-[#6b5c3e]">
+              <p className="text-[#000000]">
                 Subha Farms is a premium farmland investment opportunity located in {selectedProject.location}. 
                 This agricultural retreat offers estimated returns of {selectedProject.estimatedReturns}% p.a. with a lock-in period of {selectedProject.lockInPeriod} years.
                 With {selectedProject.availableSlots} investment slots available, this is an excellent opportunity to invest in sustainable agriculture and recreational property.
@@ -443,26 +445,26 @@ export default function InvestPage() {
               <div className="mt-4 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm text-[#6b5c3e]">Project Size</p>
+                    <p className="text-sm text-[#000000]">Project Size</p>
                     <p className="font-medium text-[#231e1b]">25 Acres</p>
                   </div>
                   <div>
-                    <p className="text-sm text-[#6b5c3e]">Developer</p>
+                    <p className="text-sm text-[#000000]">Developer</p>
                     <p className="font-medium text-[#231e1b]">Subha Group</p>
                   </div>
                   <div>
-                    <p className="text-sm text-[#6b5c3e]">Project Timeline</p>
+                    <p className="text-sm text-[#000000]">Project Timeline</p>
                     <p className="font-medium text-[#231e1b]">2023 - 2025</p>
                   </div>
                   <div>
-                    <p className="text-sm text-[#6b5c3e]">Project Stage</p>
+                    <p className="text-sm text-[#000000]">Project Stage</p>
                     <p className="font-medium text-[#231e1b]">Active Development</p>
                   </div>
                 </div>
                 
                 <div>
                   <h4 className="text-sm font-semibold text-[#231e1b] mb-2">Key Amenities</h4>
-                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-[#6b5c3e]">
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-[#000000]">
                     <li className="flex items-center">
                       <span className="bg-[#c7ab6e] bg-opacity-10 p-1 rounded-full mr-2">
                         <CheckCircle2 className="h-3 w-3 text-[#a3824a]" />
@@ -529,7 +531,7 @@ export default function InvestPage() {
         format: (v: string | number) => {
           const numValue = typeof v === 'string' ? parseFloat(v) : v;
           return (
-            <span className= "inline-block border-[#231e1b90] font-semibold text-[#231e1b] text-md px-2 py-0.5 rounded border">
+            <span className= "inline-block font-semibold text-[#231e1b] text-xl px-2 py-0.5 ">
               {`${numValue}% p.a.`}
             </span>
           );
@@ -543,6 +545,14 @@ export default function InvestPage() {
           return formatCurrency(typeof v === 'string' ? parseFloat(v) : v);
         }
       },
+
+      { 
+        label: "Max Investment", 
+        key: "maxInvestment", 
+        format: (v: string | number) => {
+          return formatCurrency(typeof v === 'string' ? parseFloat(v) : v);
+        }
+      },
       
       { 
         label: "Lock-in Period", 
@@ -552,32 +562,46 @@ export default function InvestPage() {
           return `${numValue} years`;
         }
       },
+         
       { 
-        label: "Available Slots", 
-        key: "availableSlots", 
+        label: "Payment Plan", 
+        key: "paymentPlan", 
         format: (v: string | number) => {
-          return String(v);
+          return (
+            <img 
+              src={typeof v === 'string' ? v : ''} 
+              alt="Payment Plan" 
+              className="w-fit h-auto rounded-md shadow-sm"
+            />
+          );
         }
       },
-      { 
-        label: "Risk Level", 
-        key: "name", 
-        format: (v: string | number) => {
-          const strValue = String(v);
-          if (strValue === "Gold") return "Medium";
-          if (strValue === "Platinum") return "Medium-High";
-          return "Low";
-        }
-      },
-      { 
-        label: "Suitability", 
-        key: "name", 
-        format: (v: string | number) => {
-          const strValue = String(v);
-          if (strValue === "Gold" || strValue === "Platinum") return "Long-Term";
-          return "Short-Term";
-        }
-      }
+      // { 
+      //   label: "Available Slots", 
+      //   key: "availableSlots", 
+      //   format: (v: string | number) => {
+      //     return String(v);
+      //   }
+      // },
+      // { 
+      //   label: "Risk Level", 
+      //   key: "name", 
+      //   format: (v: string | number) => {
+      //     const strValue = String(v);
+      //     if (strValue === "Gold") return "Medium";
+      //     if (strValue === "Platinum") return "Medium-High";
+      //     return "Low";
+      //   }
+      // },
+      // { 
+      //   label: "Suitability", 
+      //   key: "name", 
+      //   format: (v: string | number) => {
+      //     const strValue = String(v);
+      //     if (strValue === "Gold" || strValue === "Platinum") return "Long-Term";
+      //     return "Short-Term";
+      //   }
+      // }
     ];
     
     return (
@@ -587,7 +611,7 @@ export default function InvestPage() {
             {/* Features header */}
             <div className="p-4 border-r border-[#e3d4bb]">
               <div className="h-20 flex items-end pb-2">
-                <h3 className="text-sm font-semibold text-[#6b5c3e]">Features</h3>
+                <h3 className="text-sm font-semibold text-[#000000]">Features</h3>
               </div>
             </div>
             
@@ -645,7 +669,7 @@ export default function InvestPage() {
           {comparisonFeatures.map((feature, index) => (
             <div key={feature.label} className="grid grid-cols-4 border-t border-[#e3d4bb]">
               <div className="p-4 border-r border-[#e3d4bb] bg-[#faf7f2]">
-                <p className="text-sm text-[#6b5c3e]">{feature.label}</p>
+                <p className="text-sm text-[#000000]">{feature.label}</p>
               </div>
               
               {/* Sort models to ensure consistent order */}
@@ -665,12 +689,16 @@ export default function InvestPage() {
                     value = feature.format(model.name);
                   } else if (feature.key === 'minInvestment') {
                     value = feature.format(model.minInvestment);
+                  }  else if (feature.key === 'maxInvestment') {
+                    value = feature.format(model.maxInvestment);
                   } else if (feature.key === 'roi') {
                     value = feature.format(model.roi);
                   } else if (feature.key === 'lockInPeriod') {
                     value = feature.format(model.lockInPeriod);
                   } else if (feature.key === 'availableSlots') {
                     value = feature.format(model.availableSlots);
+                  }else if (feature.key === 'paymentPlan') {
+                    value = feature.format(model.paymentPlan);
                   }
                   
                   return (
@@ -690,113 +718,99 @@ export default function InvestPage() {
   };
 
   // Slot selection for Step 3
+
   const renderSlotSelection = () => {
     if (!selectedModel) return null;
-    
-    const totalInvestment = selectedModel.minInvestment * selectedSlots * quantity;
-    
+
+    const cards = [
+      { size: "1 BHK", sqft: "450 Sqft", amount: 2000000, lockIn: "2 Year", roi: "45%", return: 3500000, type: "premium" },
+      { size: "2 BHK", sqft: "1000 Sqft", amount: 4000000, lockIn: "2 Year", roi: "45%", return: 3500000, type: "premium" },
+      { size: "2.5 BHK", sqft: "1400 Sqft", amount: 6000000, lockIn: "2 Year", roi: "45%", return: 3500000, type: "premium" },
+      { size: "3 BHK", sqft: "1800 Sqft", amount: 9000000, lockIn: "2 Year", roi: "45%", return: 3500000, type: "premium" },
+      { size: "Virtual Unit 1", sqft: "230 Sqft", amount: 1000000, lockIn: "2 Year", roi: "45%", return: 3500000, type: "virtual" },
+      { size: "Virtual Unit 2", sqft: "150 Sqft", amount: 900000, lockIn: "2 Year", roi: "45%", return: 3500000, type: "virtual" },
+    ];
+
+    const filteredCards = selectedModel.name.toLowerCase() === "virtual" 
+      ? cards.filter(card => card.type === "virtual")
+      : cards.filter(card => card.type === "premium");
+
     return (
-      <div className="space-y-6 max-w-[600px] m-auto">
-        <Card className="border-[#e3d4bb]">
-          <CardContent className="p-6">
-            <h3 className="text-lg font-semibold mb-4 text-[#231e1b]">Selected Investment Model</h3>
-            <div className="flex items-center mb-6">
-              <span className="px-3 py-1 rounded-full text-sm font-medium bg-[#EFF6E9] text-[#42855B]">
-                {selectedModel.name}
-              </span>
-              <span className="mx-2 text-[#6b5c3e]">•</span>
-              <span className="text-sm text-[#6b5c3e]">
-                {formatCurrency(selectedModel.minInvestment)} per slot
-              </span>
-            </div>
-            
-            <div className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-[#231e1b] mb-2">Number of Slots</label>
-                <div className="flex items-center max-w-xs">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="h-10 w-10"
-                    onClick={() => handleSlotsChange(selectedSlots - 1)}
-                    disabled={selectedSlots <= 1}
-                  >
-                    <Minus className="h-4 w-4" />
-                  </Button>
-                  <div className="w-20 mx-3">
-                    <div className="relative">
-                      <input
-                        type="number"
-                        className="w-full border border-input bg-background h-10 rounded-md px-3 py-2 text-sm text-center"
-                        value={selectedSlots}
-                        onChange={(e) => handleSlotsChange(parseInt(e.target.value) || 1)}
-                        min={1}
-                        max={selectedModel.availableSlots}
-                      />
-                    </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {filteredCards.map((card, index) => {
+          const isSelected = selectedSlots === index + 1;
+          
+          return (
+            <div 
+              key={index} 
+              className={`
+                relative rounded-xl overflow-hidden cursor-pointer transition-all
+                ${isSelected 
+                  ? 'ring-2 ring-[#c7ab6e] bg-[#faf7f2]' 
+                  : 'hover:bg-[#f8f2ed] bg-white'}
+                border border-[#e3d4bb]
+              `}
+              onClick={() => handleSlotsChange(index + 1)}
+            >
+              {/* Selection indicator */}
+              <div className={`
+                absolute top-4 right-4 w-6 h-6 rounded-full border-2 
+                ${isSelected 
+                  ? 'border-[#c7ab6e] bg-[#c7ab6e]' 
+                  : 'border-[#e3d4bb]'}
+                flex items-center justify-center
+              `}>
+                {isSelected && <Check className="h-4 w-4 text-white" />}
+              </div>
+
+              <div className="p-6">
+                <div className="flex items-start mb-4">
+                  <div className={`
+                    p-3 rounded-lg mr-4
+                    ${card.type === "virtual" ? 'bg-[#E9F6F6]' : 'bg-[#EFF6E9]'}
+                  `}>
+                    <Building2 className={`
+                      h-6 w-6
+                      ${card.type === "virtual" ? 'text-[#2A8D8D]' : 'text-[#42855B]'}
+                    `} />
                   </div>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="h-10 w-10"
-                    onClick={() => handleSlotsChange(selectedSlots + 1)}
-                    disabled={selectedSlots >= selectedModel.availableSlots}
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </div>
-                <p className="text-xs text-[#6b5c3e] mt-1">
-                  Available slots: {selectedModel.availableSlots}
-                </p>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-[#231e1b] mb-2">Quantity per Slot</label>
-                <div className="flex items-center max-w-xs">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="h-10 w-10"
-                    onClick={() => handleQuantityChange(quantity - 1)}
-                    disabled={quantity <= 1}
-                  >
-                     <Minus className="h-4 w-4" />
-                  </Button>
-                  <div className="w-20 mx-3">
-                    <div className="relative">
-                      <input
-                        type="number"
-                        className="w-full border border-input bg-background h-10 rounded-md px-3 py-2 text-sm text-center"
-                        value={quantity}
-                        onChange={(e) => handleQuantityChange(parseInt(e.target.value) || 1)}
-                        min={1}
-                      />
-                    </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-[#231e1b]">{card.size}</h3>
+                    <p className="text-sm text-[#6b5c3e]">{card.sqft}</p>
                   </div>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="h-10 w-10"
-                    onClick={() => handleQuantityChange(quantity + 1)}
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
                 </div>
+
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <p className="text-sm text-[#6b5c3e]">Investment Amount</p>
+                    <p className="font-semibold text-[#231e1b]">{formatCurrency(card.amount)}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-[#6b5c3e]">Expected Returns</p>
+                    <p className="font-semibold text-[#42855B]">{card.roi}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-[#6b5c3e]">Lock-in Period</p>
+                    <p className="font-semibold text-[#231e1b]">{card.lockIn}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-[#6b5c3e]">Maturity Amount</p>
+                    <p className="font-semibold text-[#231e1b]">{formatCurrency(card.return)}</p>
+                  </div>
+                </div>
+
+                {isSelected && (
+                  <div className="mt-4 pt-4 border-t border-[#e3d4bb]">
+                    <p className="text-sm text-[#42855B] flex items-center">
+                      <CheckCircle2 className="h-4 w-4 mr-2" />
+                      Selected Investment Option
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
-            
-            <div className="mt-8 pt-4 border-t border-[#e3d4bb]">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-[#231e1b]">Total Investment</span>
-                <span className="text-xl font-bold text-[#231e1b]">{formatCurrency(totalInvestment)}</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+          );
+        })}
       </div>
     );
   };
@@ -818,53 +832,53 @@ export default function InvestPage() {
             
             <div className="space-y-4">
               <div className="flex justify-between items-center py-2 border-b border-[#e3d4bb]">
-                <span className="text-[#6b5c3e]">Project Name</span>
+                <span className="text-[#000000]">Project Name</span>
                 <span className="font-medium text-[#231e1b]">{selectedProject.name}</span>
               </div>
               
               <div className="flex justify-between items-center py-2 border-b border-[#e3d4bb]">
-                <span className="text-[#6b5c3e]">Investment Model</span>
+                <span className="text-[#000000]">Investment Model</span>
                 <span className="font-medium text-[#231e1b]">{selectedModel.name}</span>
               </div>
               
               <div className="flex justify-between items-center py-2 border-b border-[#e3d4bb]">
-                <span className="text-[#6b5c3e]">Number of Slots</span>
+                <span className="text-[#000000]">Number of Slots</span>
                 <span className="font-medium text-[#231e1b]">{selectedSlots}</span>
               </div>
               
               <div className="flex justify-between items-center py-2 border-b border-[#e3d4bb]">
-                <span className="text-[#6b5c3e]">Quantity per Slot</span>
+                <span className="text-[#000000]">Quantity per Slot</span>
                 <span className="font-medium text-[#231e1b]">{quantity}</span>
               </div>
               
               <div className="flex justify-between items-center py-2 border-b border-[#e3d4bb]">
-                <span className="text-[#6b5c3e]">Investment Amount</span>
+                <span className="text-[#000000]">Investment Amount</span>
                 <span className="font-medium text-[#231e1b]">{formatCurrency(totalInvestment)}</span>
               </div>
               
               <div className="flex justify-between items-center py-2 border-b border-[#e3d4bb]">
-                <span className="text-[#6b5c3e]">Expected Returns</span>
+                <span className="text-[#000000]">Expected Returns</span>
                 <span className="font-medium text-[#231e1b]">{selectedModel.roi}% p.a.</span>
               </div>
               
               <div className="flex justify-between items-center py-2 border-b border-[#e3d4bb]">
-                <span className="text-[#6b5c3e]">Lock-in Period</span>
+                <span className="text-[#000000]">Lock-in Period</span>
                 <span className="font-medium text-[#231e1b]">{selectedModel.lockInPeriod} years</span>
               </div>
               
               <div className="flex justify-between items-center py-2 border-b border-[#e3d4bb]">
-                <span className="text-[#6b5c3e]">Maturity Date</span>
+                <span className="text-[#000000]">Maturity Date</span>
                 <span className="font-medium text-[#231e1b]">{maturityDate.toLocaleDateString()}</span>
               </div>
               
               <div className="flex justify-between items-center py-2 border-b border-[#e3d4bb]">
-                <span className="text-[#6b5c3e]">Estimated Maturity Value</span>
+                <span className="text-[#000000]">Estimated Maturity Value</span>
                 <span className="font-bold text-[#42855B]">{formatCurrency(maturityAmount)}</span>
               </div>
             </div>
             
             <div className="mt-6 bg-[#f8f2ed] p-4 rounded-lg">
-              <p className="text-sm text-[#6b5c3e]">
+              <p className="text-sm text-[#000000]">
                 By proceeding with this investment, you agree to the terms and conditions of Subha Invest. The estimated returns are based on current market conditions and may vary.
               </p>
             </div>
@@ -880,18 +894,18 @@ export default function InvestPage() {
         title="Investment Process" 
         showBack 
         backTo="/dashboard" 
-        right={
-          currentStep > 0 && (
-            <Button 
-              variant="outline" 
-              size="sm"
-              className="text-xs border-[#c7ab6e] text-[#a3824a]"
-              onClick={handleSaveDraft}
-            >
-              Save Draft
-            </Button>
-          )
-        }
+        // right={
+        //   currentStep > 0 && (
+        //     <Button 
+        //       variant="outline" 
+        //       size="sm"
+        //       className="text-xs border-[#c7ab6e] text-[#a3824a]"
+        //       onClick={handleSaveDraft}
+        //     >
+        //       Save Draft
+        //     </Button>
+        //   )
+        // }
       />
       
       <main className="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 pb-20 md:pb-6">
@@ -919,7 +933,7 @@ export default function InvestPage() {
                     </div>
                     <span 
                       className={`mt-2 text-xs font-medium ${
-                        index <= currentStep ? 'text-[#231e1b]' : 'text-[#6b5c3e]'
+                        index <= currentStep ? 'text-[#231e1b]' : 'text-[#000000]'
                       }`}
                     >
                       {step}
@@ -966,15 +980,28 @@ export default function InvestPage() {
               )}
               
               {currentStep < 3 ? (
-                <Button
+          
+            <div className="space-x-3">
+                  <Button 
+              variant="outline" 
+              size="sm"
+              className="text-xs border-[#c7ab6e] text-[#a3824a]"
+              onClick={handleSaveDraft}
+            >
+              Save Draft
+            </Button>
+
+<Button
                   onClick={handleNextStep}
                   className="bg-[#231e1b] hover:bg-[#524b47] text-white"
                   disabled={currentStep === 1 && !selectedModel}
                 >
                   {currentStep === 0 ? "Select Investment Model" :
-                   currentStep === 1 ? "Choose Slots" : "Continue"}
+                   currentStep === 1 ? "Select Unit/Sqft/Amount" : "Continue"}
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
+            </div>
+               
               ) : (
                 <div className="space-x-3">
                   <Button

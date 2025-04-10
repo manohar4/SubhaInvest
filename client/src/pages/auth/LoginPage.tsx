@@ -74,7 +74,7 @@ export default function LoginPage() {
             </div>
           
             <p className="text-[#231elb] mt-2">
-              Your gateway to premium real estate investments
+            YOUR FUTURE BEGINS HERE
             </p>
           </div>
 

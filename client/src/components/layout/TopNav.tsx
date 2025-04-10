@@ -37,7 +37,7 @@ export default function TopNav({
   };
 
   return (
-    <header className="bg-[#f8f2ed] border-b border-[#e3d4bb] p-4 sticky top-0 z-30">
+    <header className="bg-[#231e1b] border-b border-[#e3d4bb] p-4 sticky top-0 z-30">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         <div className="flex items-center">
           {showBack && (
@@ -52,11 +52,12 @@ export default function TopNav({
           )}
 
           <div className="flex items-center">
-            <img src={subhaLogo} alt="Subha Logo" className="h-8 mr-3" />
-            <h1 className="text-xl font-bold text-[#231e1b]">{title}</h1>
+            <img src={subhaLogo} alt="Subha Logo" className="h-10 mr-3" />
+            
           </div>
+          
         </div>
-        
+        <h1 className="text-xl font-bold text-white">Grow With Us</h1>
         <div className="flex items-center gap-3">
           {right}
           

@@ -23,10 +23,12 @@ export interface InvestmentModel {
   id: string;
   name: string;
   minInvestment: number;
+  maxInvestment: number;
   roi: number;
   lockInPeriod: number;
   availableSlots: number;
   projectId: string;
+  paymentPlan?: string; 
 }
 
 // Investment types
