@@ -98,7 +98,7 @@
   }
 
   body {
-    @apply font-raleway antialiased bg-[#f8f2ed] text-foreground min-h-screen;
+    @apply font-raleway antialiased bg-[#ffffff] text-foreground min-h-screen;
   }
   
   h1, h2, h3, h4, h5, h6 {
