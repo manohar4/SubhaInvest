@@ -7,68 +7,109 @@ import {
 } from "react";
 import { useLocation } from "wouter";
 import { User } from "@/lib/types";
+import { auth, firestoreDb } from "../firebaseConfig.js";
+import { signOut, onAuthStateChanged } from "firebase/auth";
+import {
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  serverTimestamp,
+} from "firebase/firestore";
+import { useToast } from "@/hooks/use-toast";
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  phoneNumber: string;
-  setPhoneNumber: (phoneNumber: string) => void;
-  login: (phoneNumber: string) => Promise<void>;
-  verifyOtp: (otp: string) => Promise<boolean>;
-  createProfile: (name: string) => Promise<boolean>;
-  logout: () => void;
   isLoading: boolean;
-  isBypassMode: boolean;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Mock user for testing
-const mockUser: User = {
-  id: 1,
-  phoneNumber: "+919876543210",
-  name: "Test User",
-  createdAt: new Date().toISOString(),
-};
-
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(mockUser);
-  const [phoneNumber, setPhoneNumber] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [, navigate] = useLocation();
+  const { toast } = useToast();
 
-  const login = async (phone: string) => {
-    setPhoneNumber(phone);
-    setUser(mockUser);
-  };
+  useEffect(() => {
+    if (!isLoading) {
+      if (user) {
+        navigate("/dashboard");
+      } else {
+        navigate("/login");
+      }
+    }
+  }, [user, isLoading, navigate]);
 
-  const verifyOtp = async (otp: string): Promise<boolean> => {
-    setUser(mockUser);
-    return true;
-  };
+  // Listen to auth state changes
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        try {
+          const userDoc = await getDoc(
+            doc(firestoreDb, "users", firebaseUser.uid)
+          );
+          if (userDoc.exists()) {
+            setUser({
+              uid: firebaseUser.uid,
+              phoneNumber: firebaseUser.phoneNumber || "",
+              name: userDoc.data().name || "",
+              email: userDoc.data().email || "",
+              createdAt: userDoc.data().createdAt || new Date().toISOString(),
+              role: userDoc.data().role || "customer",
+            });
+          } else {
+            // User exists in Firebase Auth but not in Firestore
+            setUser({
+              uid: firebaseUser.uid,
+              phoneNumber: firebaseUser.phoneNumber || "",
+              name: "",
+              email: "",
+              createdAt: new Date().toISOString(),
+              role: "customer",
+            });
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+          toast({
+            title: "Error",
+            description: "Failed to load user data",
+            variant: "destructive",
+          });
+        }
+      } else {
+        setUser(null);
+      }
+      setIsLoading(false);
+    });
 
-  const createProfile = async (name: string): Promise<boolean> => {
-    setUser(mockUser);
-    return true;
-  };
+    return () => unsubscribe();
+  }, [toast]);
 
-  const logout = () => {
-    setUser(mockUser);
+  const logout = async () => {
+    try {
+      await signOut(auth);
+      setUser(null);
+      navigate("/");
+    } catch (error: any) {
+      console.error("Logout error:", error);
+      toast({
+        title: "Logout Failed",
+        description: error.message || "Failed to logout",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        isAuthenticated: true,
-        phoneNumber,
-        setPhoneNumber,
-        login,
-        verifyOtp,
-        createProfile,
+        isAuthenticated: !!user,
+        isLoading,
         logout,
-        isLoading: false,
-        isBypassMode: true,
       }}
     >
       {children}
@@ -85,5 +126,22 @@ export function useAuth() {
 }
 
 export function RequireAuth({ children }: { children: ReactNode }) {
-  return <>{children}</>;
+  const { user, isLoading } = useAuth();
+  const [, navigate] = useLocation();
+
+  useEffect(() => {
+    if (!isLoading) {
+      if (user) {
+        navigate("/dashboard");
+      } else {
+        navigate("/login");
+      }
+    }
+  }, [user, isLoading, navigate]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  return user ? <>{children}</> : null;
 }

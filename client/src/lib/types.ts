@@ -1,9 +1,11 @@
 // User types
 export interface User {
-  id: number;
+  uid: string;
   phoneNumber: string;
   name: string;
   createdAt: string;
+  role: string;
+  email: string;
 }
 
 // Project types
@@ -11,6 +13,7 @@ export interface Project {
   id: string;
   name: string;
   location: string;
+  description: string;
   minimumInvestment: number;
   estimatedReturns: number;
   lockInPeriod: number;

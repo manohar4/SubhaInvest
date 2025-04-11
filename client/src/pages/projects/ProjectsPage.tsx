@@ -8,30 +8,27 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ProjectsPage() {
   const { projects, selectProject } = useInvestment();
-  const { isLoading } = useQuery<Project[]>({
-    queryKey: ['/api/projects'],
-    initialData: projects
-  });
+  const isLoading = false;
 
+  // const { isLoading } = useQuery<Project[]>({
+  //   queryKey: ["/api/projects"],
+  //   initialData: projects,
+  // });
   return (
     <div className="flex flex-col min-h-screen">
-      <TopNav 
-        title="Available Projects" 
-        showBack 
-        backTo="/dashboard" 
-      />
-      
+      <TopNav title="Available Projects" showBack backTo="/dashboard" />
+
       <main className="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 pb-20 md:pb-6">
         <div className="mb-6">
           <p className="text-neutral-500">Select a project to invest in</p>
         </div>
-        
+
         {isLoading ? (
           <ProjectsListSkeleton />
         ) : (
           <div className="space-y-6">
             {projects.map((project) => (
-              <ProjectCard 
+              <ProjectCard
                 key={project.id}
                 project={project}
                 onSelect={selectProject}
@@ -40,7 +37,7 @@ export default function ProjectsPage() {
           </div>
         )}
       </main>
-      
+
       <BottomNav />
     </div>
   );

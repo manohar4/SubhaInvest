@@ -1,86 +1,37 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useLocation } from "wouter";
-import { useQuery } from "@tanstack/react-query";
-import { formatCurrency } from "@/lib/utils";
+import { collection, onSnapshot } from "firebase/firestore";
+import { firestoreDb } from "../../firebaseConfig.js";
 import { useAuth } from "@/context/AuthContext";
 import { useInvestment } from "@/context/InvestmentContext";
 import TopNav from "@/components/layout/TopNav";
 import BottomNav from "@/components/layout/BottomNav";
-import InvestmentSummary from "@/components/dashboard/InvestmentSummary";
-import ActiveInvestments from "@/components/dashboard/ActiveInvestments";
-import { Investment, Project } from "@/lib/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import InvestmentSummary from "@/components/dashboard/InvestmentSummary";
+import ActiveInvestments from "@/components/dashboard/ActiveInvestments";
 
 export default function DashboardPage() {
-  const { user, isBypassMode } = useAuth();
-  const {
-    investments: contextInvestments,
-    projects,
-    selectProject,
-  } = useInvestment();
+  const { user } = useAuth();
   const [, navigate] = useLocation();
+  const { projects, selectProject, isLoading, investments } = useInvestment();
 
-  // Only use the query if not in bypass mode
-  const { data: apiInvestments, isLoading: isApiLoading } = useQuery<
-    Investment[]
-  >({
-    queryKey: ["/api/investments"],
-    enabled: !isBypassMode,
-  });
+  // Set up real-time listener for projects
+  // useEffect(() => {
+  //   const projectsRef = collection(firestoreDb, "projects");
+  //   const unsubscribe = onSnapshot(projectsRef, (snapshot) => {
+  //     const projectsData = snapshot.docs.map((doc) => ({
+  //       id: doc.id,
+  //       ...doc.data(),
+  //     }));
+  //   });
 
-  // Use either context investments (bypass mode) or API investments
-  const investments = isBypassMode ? contextInvestments : apiInvestments;
-  const isLoading = isBypassMode ? false : isApiLoading;
+  //   return () => unsubscribe();
+  // }, []);
 
-  const [summaryData, setSummaryData] = useState({
-    totalInvested: 0,
-    currentValue: 0,
-    growthPercentage: 0,
-    activeInvestments: 0,
-  });
-
-  useEffect(() => {
-    if (investments) {
-      const totalInvested = investments.reduce(
-        (sum, inv) => sum + inv.amount,
-        0,
-      );
-
-      // Calculate current value with varying growth rates for each investment
-      const currentValue = investments.reduce((sum, inv) => {
-        // Calculate months since investment
-        const investmentDate = new Date(inv.createdAt);
-        const currentDate = new Date();
-        const monthsDiff =
-          (currentDate.getFullYear() - investmentDate.getFullYear()) * 12 +
-          (currentDate.getMonth() - investmentDate.getMonth());
-
-        // Monthly growth rate (annual rate / 12)
-        const monthlyRate = inv.expectedReturns / 12 / 100;
-
-        // Compound interest formula
-        const investmentValue =
-          inv.amount * Math.pow(1 + monthlyRate, monthsDiff);
-        return sum + investmentValue;
-      }, 0);
-
-      // Calculate growth percentage
-      const growthPercentage =
-        totalInvested > 0
-          ? Math.round(((currentValue - totalInvested) / totalInvested) * 100)
-          : 0;
-
-      setSummaryData({
-        totalInvested,
-        currentValue: Math.round(currentValue),
-        growthPercentage,
-        activeInvestments: investments.length,
-      });
-    }
-  }, [investments]);
-
+  console.log("investments", investments);
+  console.log("projects", projects);
   return (
     <div className="flex flex-col min-h-screen">
       <TopNav title="Invest" />
@@ -92,14 +43,16 @@ export default function DashboardPage() {
           <>
             <div className="mb-8">
               <h2 className="text-2xl font-bold mb-2 text-[#231e1b]">
-                Welcome, {user?.name.split(" ")[0]}
+                Welcome, {user?.name?.split(" ")[0]}
               </h2>
               <p className="text-[#6b5c3e]">
                 Manage your real estate investments
               </p>
             </div>
-            <Card className="border-0 overflow-hidden mb-4">
-              <div className="bg-gradient-to-r from-[#c7ab6e60] to-[#a3824a60] text-white">
+
+            {/* Portfolio Growth Card */}
+            <Card className="border-0 overflow-hidden mb-8">
+              <div className="bg-gradient-to-r from-[#c7ab6e60] to-[#a3824a60]">
                 <CardContent className="p-7">
                   <div className="flex flex-col">
                     <div className="mb-5">
@@ -135,9 +88,7 @@ export default function DashboardPage() {
 
                           <div className="p-4">
                             <p className="text-sm text-[#6b5c3e] mb-4">
-                              {project.name === "Subha Farms"
-                                ? "120 acres of green luxury with organic farming, events space, and recreational activities."
-                                : "Premium residential project with modern amenities and excellent connectivity."}
+                              {project.description}
                             </p>
 
                             <Button
@@ -157,16 +108,38 @@ export default function DashboardPage() {
                 </CardContent>
               </div>
             </Card>
+            {/* Investments Section */}
             {investments && investments.length > 0 ? (
               <>
-                <InvestmentSummary
-                  totalInvested={summaryData.totalInvested}
-                  currentValue={summaryData.currentValue}
-                  growthPercentage={summaryData.growthPercentage}
-                  activeInvestments={summaryData.activeInvestments}
-                />
-
-                <ActiveInvestments investments={investments} />
+                <div className="mb-8">
+                  <InvestmentSummary
+                    totalInvested={investments.reduce(
+                      (sum, inv) => sum + inv.amount,
+                      0
+                    )}
+                    currentValue={investments.reduce((sum, inv) => {
+                      const monthsSinceInvestment = Math.floor(
+                        (new Date().getTime() -
+                          new Date(inv.createdAt).getTime()) /
+                          (1000 * 60 * 60 * 24 * 30)
+                      );
+                      const monthlyRate = inv.expectedReturns / 12 / 100;
+                      return (
+                        sum +
+                        inv.amount *
+                          Math.pow(1 + monthlyRate, monthsSinceInvestment)
+                      );
+                    }, 0)}
+                    growthPercentage={
+                      investments.reduce(
+                        (avg, inv) => avg + inv.expectedReturns,
+                        0
+                      ) / investments.length
+                    }
+                    activeInvestments={investments.length}
+                  />
+                  <ActiveInvestments investments={investments} />
+                </div>
               </>
             ) : (
               <div className="mt-8 p-6 border border-dashed border-[#e3d4bb] rounded-lg text-center">
@@ -208,7 +181,10 @@ function DashboardSkeleton() {
         <Skeleton className="h-5 w-72 bg-[#f0e7dc]" />
       </div>
 
-      {/* Summary Skeleton */}
+      {/* Portfolio Card Skeleton */}
+      <Skeleton className="h-[500px] w-full rounded-lg bg-[#f0e7dc] mb-8" />
+
+      {/* Investment Summary Skeleton */}
       <div className="mb-8">
         <Skeleton className="h-6 w-48 mb-3 bg-[#f0e7dc]" />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -218,21 +194,12 @@ function DashboardSkeleton() {
         </div>
       </div>
 
-      {/* Investments Skeleton */}
-      <div className="mb-8">
-        <div className="flex justify-between items-center mb-4">
-          <Skeleton className="h-6 w-36 bg-[#f0e7dc]" />
-          <Skeleton className="h-5 w-16 bg-[#f0e7dc]" />
-        </div>
-
-        <div className="space-y-4">
-          {[1, 2].map((i) => (
-            <Skeleton key={i} className="h-60 w-full rounded-lg bg-[#f0e7dc]" />
-          ))}
-        </div>
+      {/* Active Investments Skeleton */}
+      <div className="space-y-4">
+        {[1, 2].map((i) => (
+          <Skeleton key={i} className="h-60 w-full rounded-lg bg-[#f0e7dc]" />
+        ))}
       </div>
-
-      <Skeleton className="h-40 w-full rounded-lg bg-[#f0e7dc]" />
     </>
   );
 }

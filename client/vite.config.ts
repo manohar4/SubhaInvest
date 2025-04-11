@@ -5,11 +5,10 @@ import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
 export default defineConfig({
-  plugins: [
-    react(),
-    runtimeErrorOverlay(),
-    themePlugin(),
-  ],
+  plugins: [react(), runtimeErrorOverlay(), themePlugin()],
+  server: {
+    host: true, // This allows both localhost and 127.0.0.1
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),
@@ -24,10 +23,10 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
+          vendor: ["react", "react-dom", "react-router-dom"],
         },
       },
     },
   },
-  base: '/',
+  base: "/",
 });

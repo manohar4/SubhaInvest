@@ -14,11 +14,11 @@ interface InvestmentModelsPageProps {
 export default function InvestmentModelsPage({ projectId }: InvestmentModelsPageProps) {
   const { projects, selectedProject, selectProject } = useInvestment();
   const [models, setModels] = useState<InvestmentModel[]>([]);
-  
+
   useEffect(() => {
     // If project is not already selected, find it by ID
     if (!selectedProject || selectedProject.id !== projectId) {
-      const project = projects.find(p => p.id === projectId);
+      const project = projects.find((p) => p.id === projectId);
       if (project) {
         selectProject(project);
       }
@@ -26,45 +26,78 @@ export default function InvestmentModelsPage({ projectId }: InvestmentModelsPage
   }, [projectId, projects, selectedProject, selectProject]);
 
   // Load models for this project
-  const { data: investmentModels, isLoading } = useQuery<InvestmentModel[]>({
-    queryKey: [`/api/projects/${projectId}/models`],
-    enabled: !!projectId,
-    initialData: () => {
-      // Mock models data based on requirements
-      if (projectId) {
-        return [
-          {
-            id: "gold",
-            name: "Gold",
-            minInvestment: 100000,
-            roi: 12,
-            lockInPeriod: 3,
-            availableSlots: 5,
-            projectId
-          },
-          {
-            id: "platinum",
-            name: "Platinum",
-            minInvestment: 100000,
-            roi: 14,
-            lockInPeriod: 4,
-            availableSlots: 3,
-            projectId
-          },
-          {
-            id: "virtual",
-            name: "Virtual",
-            minInvestment: 100000,
-            roi: 10,
-            lockInPeriod: 2,
-            availableSlots: 10,
-            projectId
-          }
-        ];
-      }
-      return [];
-    }
-  });
+  // const { data: investmentModels, isLoading } = useQuery<InvestmentModel[]>({
+  //   queryKey: [`/api/projects/${projectId}/models`],
+  //   enabled: !!projectId,
+  //   initialData: () => {
+  //     // Mock models data based on requirements
+  //     if (projectId) {
+  //       return [
+  //         {
+  //           id: "gold",
+  //           name: "Gold",
+  //           minInvestment: 100000,
+  //           roi: 12,
+  //           lockInPeriod: 3,
+  //           availableSlots: 5,
+  //           projectId
+  //         },
+  //         {
+  //           id: "platinum",
+  //           name: "Platinum",
+  //           minInvestment: 100000,
+  //           roi: 14,
+  //           lockInPeriod: 4,
+  //           availableSlots: 3,
+  //           projectId
+  //         },
+  //         {
+  //           id: "virtual",
+  //           name: "Virtual",
+  //           minInvestment: 100000,
+  //           roi: 10,
+  //           lockInPeriod: 2,
+  //           availableSlots: 10,
+  //           projectId
+  //         }
+  //       ];
+  //     }
+  //     return [];
+  //   }
+  // });
+
+  const { data: Investments, isLoading } = {
+    data: [
+      {
+        id: "gold",
+        name: "Gold",
+        minInvestment: 100000,
+        roi: 12,
+        lockInPeriod: 3,
+        availableSlots: 5,
+        projectId,
+      },
+      {
+        id: "platinum",
+        name: "Platinum",
+        minInvestment: 100000,
+        roi: 14,
+        lockInPeriod: 4,
+        availableSlots: 3,
+        projectId,
+      },
+      {
+        id: "virtual",
+        name: "Virtual",
+        minInvestment: 100000,
+        roi: 10,
+        lockInPeriod: 2,
+        availableSlots: 10,
+        projectId,
+      },
+    ],
+    isLoading: false,
+  };
 
   useEffect(() => {
     if (investmentModels) {
@@ -74,20 +107,16 @@ export default function InvestmentModelsPage({ projectId }: InvestmentModelsPage
 
   return (
     <div className="flex flex-col min-h-screen">
-      <TopNav 
-        title="Investment Models" 
-        showBack 
-        backTo="/projects" 
-      />
-      
+      <TopNav title="Investment Models" showBack backTo="/projects" />
+
       <main className="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 pb-20 md:pb-6">
         <div className="mb-6">
           <h2 className="text-2xl font-bold mb-1">
-            {selectedProject?.name || ''}
+            {selectedProject?.name || ""}
           </h2>
           <p className="text-neutral-500">Select an investment model</p>
         </div>
-        
+
         {isLoading ? (
           <div className="space-y-6">
             {[1, 2, 3].map((i) => (
@@ -97,7 +126,7 @@ export default function InvestmentModelsPage({ projectId }: InvestmentModelsPage
         ) : (
           <div className="space-y-6">
             {models.map((model) => (
-              <InvestmentModelCard 
+              <InvestmentModelCard
                 key={model.id}
                 model={model}
                 projectId={projectId}
@@ -106,7 +135,7 @@ export default function InvestmentModelsPage({ projectId }: InvestmentModelsPage
           </div>
         )}
       </main>
-      
+
       <BottomNav />
     </div>
   );

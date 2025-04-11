@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInvestment } from "@/context/InvestmentContext";
 import { useAuth } from "@/context/AuthContext";
 import { Investment } from "@/lib/types";
 import {
@@ -17,9 +17,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function ProfilePage() {
   const { user } = useAuth();
 
-  const { data: investments, isLoading } = useQuery<Investment[]>({
-    queryKey: ["/api/investments"],
-  });
+  const { investments, isLoading } = useInvestment();
 
   if (!user) return null;
 

@@ -6,10 +6,18 @@ import {
   useEffect,
 } from "react";
 import { useLocation } from "wouter";
-import { apiRequest } from "@/lib/queryClient";
 import { Project, InvestmentModel, Investment } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "./AuthContext";
+import {
+  collection,
+  doc,
+  onSnapshot,
+  getDoc,
+  updateDoc,
+  arrayUnion,
+} from "firebase/firestore";
+import { firestoreDb } from "../firebaseConfig.js";
 import SubhaFarmsCover from "../assets/subhaFarmsCover.jpg";
 
 interface InvestmentContextType {
@@ -28,10 +36,10 @@ interface InvestmentContextType {
 }
 
 const InvestmentContext = createContext<InvestmentContextType | undefined>(
-  undefined,
+  undefined
 );
 
-// Mock projects data
+// Mock data for fallback/testing
 const mockProjects: Project[] = [
   {
     id: "subha-farms",
@@ -56,133 +64,20 @@ const mockProjects: Project[] = [
   },
 ];
 
-// Mock investments data
-const mockInvestments: Investment[] = [
-  {
-    id: 1,
-    userId: 1,
-    projectId: "subha-farms",
-    projectName: "Subha Farms",
-    modelId: "premium-a",
-    modelName: "Premium A",
-    slots: 2,
-    amount: 200000,
-    expectedReturns: 14,
-    lockInPeriod: 3,
-    maturityDate: new Date(
-      new Date().setFullYear(new Date().getFullYear() + 3),
-    ).toISOString(),
-    createdAt: new Date(
-      new Date().setMonth(new Date().getMonth() - 5),
-    ).toISOString(),
-    status: "active",
-  },
-  {
-    id: 2,
-    userId: 1,
-    projectId: "subha-white-waters",
-    projectName: "Subha White Waters",
-    modelId: "luxury-b",
-    modelName: "Luxury B",
-    slots: 1,
-    amount: 150000,
-    expectedReturns: 16,
-    lockInPeriod: 4,
-    maturityDate: new Date(
-      new Date().setFullYear(new Date().getFullYear() + 4),
-    ).toISOString(),
-    createdAt: new Date(
-      new Date().setMonth(new Date().getMonth() - 2),
-    ).toISOString(),
-    status: "active",
-  },
-];
-
-// Get investment models for a project (mock function)
-const getInvestmentModels = (projectId: string): InvestmentModel[] => {
-  switch (projectId) {
-    case "subha-farms":
-      return [
-        {
-          id: "premium-a",
-          name: "Premium A",
-          minInvestment: 100000,
-          roi: 14,
-          lockInPeriod: 3,
-          availableSlots: 10,
-          projectId: "subha-farms",
-        },
-        {
-          id: "premium-b",
-          name: "Premium B",
-          minInvestment: 150000,
-          roi: 15,
-          lockInPeriod: 3,
-          availableSlots: 8,
-          projectId: "subha-farms",
-        },
-      ];
-    case "subha-white-waters":
-      return [
-        {
-          id: "luxury-a",
-          name: "Luxury A",
-          minInvestment: 150000,
-          roi: 16,
-          lockInPeriod: 4,
-          availableSlots: 6,
-          projectId: "subha-white-waters",
-        },
-        {
-          id: "luxury-b",
-          name: "Luxury B",
-          minInvestment: 200000,
-          roi: 17,
-          lockInPeriod: 4,
-          availableSlots: 6,
-          projectId: "subha-white-waters",
-        },
-      ];
-    case "grand-courtyard":
-      return [
-        {
-          id: "deluxe-a",
-          name: "Deluxe A",
-          minInvestment: 200000,
-          roi: 17.5,
-          lockInPeriod: 5,
-          availableSlots: 4,
-          projectId: "grand-courtyard",
-        },
-        {
-          id: "deluxe-b",
-          name: "Deluxe B",
-          minInvestment: 250000,
-          roi: 18.5,
-          lockInPeriod: 5,
-          availableSlots: 4,
-          projectId: "grand-courtyard",
-        },
-      ];
-    default:
-      return [];
-  }
-};
-
 export function InvestmentProvider({ children }: { children: ReactNode }) {
-  const { isBypassMode } = useAuth();
-  const [projects, setProjects] = useState<Project[]>(mockProjects);
-  const [investments, setInvestments] = useState<Investment[]>(mockInvestments);
-
+  const { user, isBypassMode } = useAuth();
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [investments, setInvestments] = useState<Investment[]>([]);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [selectedModel, setSelectedModel] = useState<InvestmentModel | null>(
-    null,
+    null
   );
   const [selectedSlots, setSelectedSlots] = useState<number>(1);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const { toast } = useToast();
   const [, navigate] = useLocation();
 
+  // Basic functions
   const selectProject = (project: Project) => {
     setSelectedProject(project);
   };
@@ -201,17 +96,103 @@ export function InvestmentProvider({ children }: { children: ReactNode }) {
     setSelectedSlots(1);
   };
 
-  // Function to get mock models for a project
+  // Fetch projects from Firebase
+  useEffect(() => {
+    if (isBypassMode) {
+      setProjects(mockProjects); // Use mock data in bypass mode
+      setIsLoading(false);
+      return;
+    }
+
+    const projectsRef = collection(firestoreDb, "projects");
+    const unsubscribe = onSnapshot(
+      projectsRef,
+      (snapshot) => {
+        const projectsData = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as Project[];
+        setProjects(projectsData);
+        setIsLoading(false);
+      },
+      (error) => {
+        console.error("Error fetching projects:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load projects. Please try again later.",
+          variant: "destructive",
+        });
+        setProjects(mockProjects); // Fallback to mock data
+        setIsLoading(false);
+      }
+    );
+
+    return () => unsubscribe();
+  }, [isBypassMode, toast]);
+
+  // Fetch user's investments from Firebase
+  useEffect(() => {
+    console.log("user", user);
+    if (!user?.uid) return;
+
+    if (isBypassMode) {
+      setInvestments([]); // Clear investments in bypass mode
+      return;
+    }
+
+    const userRef = doc(firestoreDb, "users", user.uid);
+    const unsubscribe = onSnapshot(
+      userRef,
+      (docSnapshot) => {
+        if (docSnapshot.exists()) {
+          const userData = docSnapshot.data();
+          setInvestments(userData.investments || []);
+        }
+      },
+      (error) => {
+        console.error("Error fetching investments:", error);
+        toast({
+          title: "Error",
+          description:
+            "Failed to load your investments. Please try again later.",
+          variant: "destructive",
+        });
+        setInvestments([]); // Clear investments on error
+      }
+    );
+
+    return () => unsubscribe();
+  }, [user?.uid, isBypassMode, toast]);
+
+  // Get investment models for a project
   const getModelsByProject = async (
-    projectId: string,
+    projectId: string
   ): Promise<InvestmentModel[]> => {
-    return getInvestmentModels(projectId);
+    if (isBypassMode) return [];
+
+    try {
+      const projectRef = doc(firestoreDb, "projects", projectId);
+      const projectDoc = await getDoc(projectRef);
+
+      if (projectDoc.exists()) {
+        const projectData = projectDoc.data();
+        return projectData.investmentModels || [];
+      }
+      return [];
+    } catch (error) {
+      console.error("Error fetching investment models:", error);
+      toast({
+        title: "Error",
+        description: "Failed to load investment models",
+        variant: "destructive",
+      });
+      return [];
+    }
   };
 
-  // Load models for the selected project
+  // Load models when project is selected
   useEffect(() => {
     if (selectedProject) {
-      // If in bypass mode, use mock data
       getModelsByProject(selectedProject.id).then((models) => {
         if (models.length > 0) {
           setSelectedModel(models[0]);
@@ -221,7 +202,7 @@ export function InvestmentProvider({ children }: { children: ReactNode }) {
   }, [selectedProject]);
 
   const createInvestment = async (): Promise<boolean> => {
-    if (!selectedProject || !selectedModel) {
+    if (!selectedProject || !selectedModel || !user?.uid) {
       toast({
         title: "Error",
         description: "Please select a project and investment model",
@@ -232,9 +213,27 @@ export function InvestmentProvider({ children }: { children: ReactNode }) {
 
     setIsLoading(true);
     try {
+      // Verify available slots first
+      const projectRef = doc(firestoreDb, "projects", selectedProject.id);
+      const projectDoc = await getDoc(projectRef);
+
+      if (!projectDoc.exists()) {
+        throw new Error("Project not found");
+      }
+
+      const currentSlots = projectDoc.data().availableSlots;
+      if (currentSlots < selectedSlots) {
+        toast({
+          title: "Error",
+          description: "Not enough slots available",
+          variant: "destructive",
+        });
+        return false;
+      }
+
       const newInvestment: Investment = {
-        id: investments.length + 1,
-        userId: 1,
+        id: Date.now(),
+        userId: user.uid,
         projectId: selectedProject.id,
         projectName: selectedProject.name,
         modelId: selectedModel.id,
@@ -245,42 +244,27 @@ export function InvestmentProvider({ children }: { children: ReactNode }) {
         lockInPeriod: selectedModel.lockInPeriod,
         maturityDate: new Date(
           new Date().setFullYear(
-            new Date().getFullYear() + selectedModel.lockInPeriod,
-          ),
+            new Date().getFullYear() + selectedModel.lockInPeriod
+          )
         ).toISOString(),
         createdAt: new Date().toISOString(),
         status: "active",
       };
 
-      // In bypass mode, just add to local state
-      if (isBypassMode) {
-        setInvestments([...investments, newInvestment]);
-      } else {
-        // Otherwise, use the API
-        const investment: Omit<
-          Investment,
-          "id" | "userId" | "createdAt" | "status"
-        > = {
-          projectId: selectedProject.id,
-          projectName: selectedProject.name,
-          modelId: selectedModel.id,
-          modelName: selectedModel.name,
-          slots: selectedSlots,
-          amount: selectedModel.minInvestment * selectedSlots,
-          expectedReturns: selectedModel.roi,
-          lockInPeriod: selectedModel.lockInPeriod,
-          maturityDate: new Date(
-            new Date().setFullYear(
-              new Date().getFullYear() + selectedModel.lockInPeriod,
-            ),
-          ).toISOString(),
-        };
-        await apiRequest("POST", "/api/investments", investment);
-      }
+      // Update user's investments
+      const userRef = doc(firestoreDb, "users", user.uid);
+      await updateDoc(userRef, {
+        investments: arrayUnion(newInvestment),
+      });
+
+      // Update project's available slots
+      await updateDoc(projectRef, {
+        availableSlots: currentSlots - selectedSlots,
+      });
 
       toast({
-        title: "Investment successful!",
-        description: "Your investment has been confirmed.",
+        title: "Success",
+        description: "Your investment has been confirmed",
       });
 
       resetSelection();
@@ -290,7 +274,8 @@ export function InvestmentProvider({ children }: { children: ReactNode }) {
       console.error("Investment error:", error);
       toast({
         title: "Investment failed",
-        description: "There was an error processing your investment.",
+        description:
+          "There was an error processing your investment. Please try again.",
         variant: "destructive",
       });
       return false;
