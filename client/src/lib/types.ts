@@ -14,6 +14,7 @@ export interface Project {
   name: string;
   location: string;
   description: string;
+  title: string;
   minimumInvestment: number;
   estimatedReturns: number;
   lockInPeriod: number;
@@ -22,6 +23,16 @@ export interface Project {
 }
 
 // Investment model types
+interface InvestmentSlot {
+  size: string;
+  sqft: string;
+  amount: number;
+  lockIn: string;
+  roi: string;
+  return: number;
+  type: "premium" | "virtual";
+}
+
 export interface InvestmentModel {
   id: string;
   name: string;
@@ -31,7 +42,7 @@ export interface InvestmentModel {
   lockInPeriod: number;
   availableSlots: number;
   projectId: string;
-  paymentPlan?: string; 
+  slots: InvestmentSlot[];
 }
 
 // Investment types

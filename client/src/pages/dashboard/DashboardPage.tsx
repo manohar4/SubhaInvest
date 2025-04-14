@@ -88,7 +88,7 @@ export default function DashboardPage() {
 
                           <div className="p-4">
                             <p className="text-sm text-[#6b5c3e] mb-4">
-                              {project.description}
+                              {project.title}
                             </p>
 
                             <Button

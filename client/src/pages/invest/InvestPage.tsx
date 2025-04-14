@@ -10,7 +10,14 @@ import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/lib/utils";
 import paymentPlan from "@/assets/paymentPlan.png"
 import { CheckCircle2, Check, ArrowLeft, ArrowRight, Building2, MapPin, Calendar, Banknote, PercentCircle, Clock, Plus, Minus } from "lucide-react";
-
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 interface InvestmentDraft {
   projectId: string;
   modelId: string | null;
@@ -23,7 +30,7 @@ const STEPS = [
   "Explore Project",
   "Choose Investment Model",
   "Select Unit/Sqft/Amount",
-  "Investment Summary"
+  "Investment Summary",
 ];
 
 export default function InvestPage() {
@@ -49,49 +56,40 @@ export default function InvestPage() {
 
   // Handle draft loading/saving
   const [draft, setDraft] = useState<InvestmentDraft | null>(null);
+  const [showDraftDialog, setShowDraftDialog] = useState(false);
+  const [draftToRestore, setDraftToRestore] = useState<InvestmentDraft | null>(
+    null
+  );
 
   useEffect(() => {
-    // Load draft from localStorage if exists
     const savedDraft = localStorage.getItem(`investDraft_${projectId}`);
     if (savedDraft) {
       const parsedDraft = JSON.parse(savedDraft) as InvestmentDraft;
-      setDraft(parsedDraft);
-      // Prompt user to continue draft
-      setTimeout(() => {
-        const shouldContinue = confirm(
-          "You have an unfinished investment draft for this project. Would you like to continue?"
-        );
-        if (shouldContinue) {
-          // Restore draft state
-          setCurrentStep(parsedDraft.step);
-          setSlots(parsedDraft.slots);
-          setQuantity(parsedDraft.quantity);
-
-          // Find and select the project
-          const project = projects.find((p) => p.id === parsedDraft.projectId);
-          if (project) {
-            selectProject(project);
-          }
-
-          // Find and select the model if we're past step 1
-          if (parsedDraft.modelId && parsedDraft.step > 1) {
-            const projectModels = getModelsByProject(parsedDraft.projectId);
-            setModels(projectModels);
-            const model = projectModels.find(
-              (m) => m.id === parsedDraft.modelId
-            );
-            if (model) {
-              selectModel(model);
-            }
-          }
-        } else {
-          // Clear draft
-          localStorage.removeItem(`investDraft_${projectId}`);
-          setDraft(null);
-        }
-      }, 500);
+      setDraftToRestore(parsedDraft);
+      setShowDraftDialog(true);
     }
   }, [projectId]);
+  const handleRestoreDraft = () => {
+    if (draftToRestore) {
+      setCurrentStep(draftToRestore.step);
+      setSlots(draftToRestore.slots);
+      setQuantity(draftToRestore.quantity);
+
+      if (draftToRestore.modelId && models.length > 0) {
+        const model = models.find((m) => m.id === draftToRestore.modelId);
+        if (model) {
+          selectModel(model);
+        }
+      }
+    }
+    setShowDraftDialog(false);
+  };
+
+  const handleDiscardDraft = () => {
+    localStorage.removeItem(`investDraft_${projectId}`);
+    setDraftToRestore(null);
+    setShowDraftDialog(false);
+  };
 
   // Save draft whenever important values change
   useEffect(() => {
@@ -134,41 +132,10 @@ export default function InvestPage() {
 
   // Function to get hadcoded models for a project
   const getModelsByProject = (pid: string): InvestmentModel[] => {
-    return [
-      {
-        id: "gold",
-        name: "Gold",
-        minInvestment: 100000,
-        maxInvestment: 900000,
-        roi: 12,
-        lockInPeriod: 3,
-        availableSlots: 10,
-        projectId: pid,
-        paymentPlan: paymentPlan,
-      },
-      {
-        id: "platinum",
-        name: "Platinum",
-        minInvestment: 150000,
-        maxInvestment: 900000,
-        roi: 14,
-        lockInPeriod: 4,
-        availableSlots: 5,
-        projectId: pid,
-        paymentPlan: paymentPlan,
-      },
-      {
-        id: "virtual",
-        name: "Virtual",
-        minInvestment: 75000,
-        maxInvestment: 900000,
-        roi: 10,
-        lockInPeriod: 2,
-        availableSlots: 15,
-        projectId: pid,
-        paymentPlan: paymentPlan,
-      },
-    ];
+    if (!selectedProject || !selectedProject.investmentModels) {
+      return [];
+    }
+    return selectedProject.investmentModels;
   };
 
   // Load models for the selected project
@@ -426,34 +393,33 @@ export default function InvestPage() {
           </h3>
           <Card className="border-[#e3d4bb]">
             <CardContent className="p-5">
-              <p className="text-[#000000]">
-                Subha Farms is a premium farmland investment opportunity located
-                in {selectedProject.location}. This agricultural retreat offers
-                estimated returns of {selectedProject.estimatedReturns}% p.a.
-                with a lock-in period of {selectedProject.lockInPeriod} years.
-                With {selectedProject.availableSlots} investment slots
-                available, this is an excellent opportunity to invest in
-                sustainable agriculture and recreational property.
-              </p>
+              <p className="text-[#000000]">{selectedProject.description}</p>
 
               <div className="mt-4 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm text-[#000000]">Project Size</p>
-                    <p className="font-medium text-[#231e1b]">25 Acres</p>
+                    <p className="font-medium text-[#231e1b]">
+                      {selectedProject.acres} Acres
+                    </p>
                   </div>
                   <div>
                     <p className="text-sm text-[#000000]">Developer</p>
-                    <p className="font-medium text-[#231e1b]">Subha Group</p>
+                    <p className="font-medium text-[#231e1b]">
+                      {selectedProject.developer}
+                    </p>
                   </div>
                   <div>
                     <p className="text-sm text-[#000000]">Project Timeline</p>
-                    <p className="font-medium text-[#231e1b]">2023 - 2025</p>
+                    <p className="font-medium text-[#231e1b]">
+                      {selectedProject.timeline?.start} -{" "}
+                      {selectedProject.timeline?.end}
+                    </p>
                   </div>
                   <div>
                     <p className="text-sm text-[#000000]">Project Stage</p>
                     <p className="font-medium text-[#231e1b]">
-                      Active Development
+                      {selectedProject.stage}
                     </p>
                   </div>
                 </div>
@@ -463,42 +429,14 @@ export default function InvestPage() {
                     Key Amenities
                   </h4>
                   <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-[#000000]">
-                    <li className="flex items-center">
-                      <span className="bg-[#c7ab6e] bg-opacity-10 p-1 rounded-full mr-2">
-                        <CheckCircle2 className="h-3 w-3 text-[#a3824a]" />
-                      </span>
-                      Organic Farming Areas
-                    </li>
-                    <li className="flex items-center">
-                      <span className="bg-[#c7ab6e] bg-opacity-10 p-1 rounded-full mr-2">
-                        <CheckCircle2 className="h-3 w-3 text-[#a3824a]" />
-                      </span>
-                      Weekend Retreat Cabins
-                    </li>
-                    <li className="flex items-center">
-                      <span className="bg-[#c7ab6e] bg-opacity-10 p-1 rounded-full mr-2">
-                        <CheckCircle2 className="h-3 w-3 text-[#a3824a]" />
-                      </span>
-                      Event & Community Spaces
-                    </li>
-                    <li className="flex items-center">
-                      <span className="bg-[#c7ab6e] bg-opacity-10 p-1 rounded-full mr-2">
-                        <CheckCircle2 className="h-3 w-3 text-[#a3824a]" />
-                      </span>
-                      Natural Swimming Pool
-                    </li>
-                    <li className="flex items-center">
-                      <span className="bg-[#c7ab6e] bg-opacity-10 p-1 rounded-full mr-2">
-                        <CheckCircle2 className="h-3 w-3 text-[#a3824a]" />
-                      </span>
-                      Hiking & Biking Trails
-                    </li>
-                    <li className="flex items-center">
-                      <span className="bg-[#c7ab6e] bg-opacity-10 p-1 rounded-full mr-2">
-                        <CheckCircle2 className="h-3 w-3 text-[#a3824a]" />
-                      </span>
-                      Children's Play Area
-                    </li>
+                    {selectedProject.amenities?.map((amenity, index) => (
+                      <li key={index} className="flex items-center">
+                        <span className="bg-[#c7ab6e] bg-opacity-10 p-1 rounded-full mr-2">
+                          <CheckCircle2 className="h-3 w-3 text-[#a3824a]" />
+                        </span>
+                        {amenity}
+                      </li>
+                    ))}
                   </ul>
                 </div>
               </div>
@@ -717,7 +655,8 @@ export default function InvestPage() {
                   } else if (feature.key === "availableSlots") {
                     value = feature.format(model.availableSlots);
                   } else if (feature.key === "paymentPlan") {
-                    value = feature.format(model.paymentPlan);
+                    // value = feature.format(model.paymentPlan);
+                    value = feature.format(paymentPlan);
                   }
 
                   return (
@@ -745,71 +684,13 @@ export default function InvestPage() {
   const renderSlotSelection = () => {
     if (!selectedModel) return null;
 
-    const cards = [
-      {
-        size: "1 BHK",
-        sqft: "450 Sqft",
-        amount: 2000000,
-        lockIn: "2 Year",
-        roi: "45%",
-        return: 3500000,
-        type: "premium",
-      },
-      {
-        size: "2 BHK",
-        sqft: "1000 Sqft",
-        amount: 4000000,
-        lockIn: "2 Year",
-        roi: "45%",
-        return: 3500000,
-        type: "premium",
-      },
-      {
-        size: "2.5 BHK",
-        sqft: "1400 Sqft",
-        amount: 6000000,
-        lockIn: "2 Year",
-        roi: "45%",
-        return: 3500000,
-        type: "premium",
-      },
-      {
-        size: "3 BHK",
-        sqft: "1800 Sqft",
-        amount: 9000000,
-        lockIn: "2 Year",
-        roi: "45%",
-        return: 3500000,
-        type: "premium",
-      },
-      {
-        size: "Virtual Unit 1",
-        sqft: "230 Sqft",
-        amount: 1000000,
-        lockIn: "2 Year",
-        roi: "45%",
-        return: 3500000,
-        type: "virtual",
-      },
-      {
-        size: "Virtual Unit 2",
-        sqft: "150 Sqft",
-        amount: 900000,
-        lockIn: "2 Year",
-        roi: "45%",
-        return: 3500000,
-        type: "virtual",
-      },
-    ];
-
-    const filteredCards =
-      selectedModel.name.toLowerCase() === "virtual"
-        ? cards.filter((card) => card.type === "virtual")
-        : cards.filter((card) => card.type === "premium");
+    const filteredSlots = selectedModel.slots.filter(
+      (slot) => slot.type.toLowerCase() === selectedModel.name.toLowerCase()
+    );
 
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {filteredCards.map((card, index) => {
+        {filteredSlots.map((slot, index) => {
           const isSelected = selectedSlots === index + 1;
 
           return (
@@ -846,14 +727,14 @@ export default function InvestPage() {
                   <div
                     className={`
                     p-3 rounded-lg mr-4
-                    ${card.type === "virtual" ? "bg-[#E9F6F6]" : "bg-[#EFF6E9]"}
+                    ${slot.type === "virtual" ? "bg-[#E9F6F6]" : "bg-[#EFF6E9]"}
                   `}
                   >
                     <Building2
                       className={`
                       h-6 w-6
                       ${
-                        card.type === "virtual"
+                        slot.type === "virtual"
                           ? "text-[#2A8D8D]"
                           : "text-[#42855B]"
                       }
@@ -862,9 +743,9 @@ export default function InvestPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-[#231e1b]">
-                      {card.size}
+                      {slot.size}
                     </h3>
-                    <p className="text-sm text-[#6b5c3e]">{card.sqft}</p>
+                    <p className="text-sm text-[#6b5c3e]">{slot.sqft}</p>
                   </div>
                 </div>
 
@@ -872,23 +753,23 @@ export default function InvestPage() {
                   <div>
                     <p className="text-sm text-[#6b5c3e]">Investment Amount</p>
                     <p className="font-semibold text-[#231e1b]">
-                      {formatCurrency(card.amount)}
+                      {formatCurrency(slot.amount)}
                     </p>
                   </div>
                   <div>
                     <p className="text-sm text-[#6b5c3e]">Expected Returns</p>
-                    <p className="font-semibold text-[#42855B]">{card.roi}</p>
+                    <p className="font-semibold text-[#42855B]">{slot.roi} %</p>
                   </div>
                   <div>
                     <p className="text-sm text-[#6b5c3e]">Lock-in Period</p>
                     <p className="font-semibold text-[#231e1b]">
-                      {card.lockIn}
+                      {slot.lockIn} Year
                     </p>
                   </div>
                   <div>
                     <p className="text-sm text-[#6b5c3e]">Maturity Amount</p>
                     <p className="font-semibold text-[#231e1b]">
-                      {formatCurrency(card.return)}
+                      {formatCurrency(slot.return)}
                     </p>
                   </div>
                 </div>
@@ -1157,6 +1038,34 @@ export default function InvestPage() {
       </main>
 
       <BottomNav />
+      <Dialog open={showDraftDialog} onOpenChange={setShowDraftDialog}>
+        <DialogContent className="sm:max-w-[425px] bg-white">
+          <DialogHeader>
+            <DialogTitle className="text-[#231e1b]">
+              Resume Investment Draft
+            </DialogTitle>
+            <DialogDescription className="text-[#6b5c3e]">
+              You have an unfinished investment draft for this project. Would
+              you like to continue where you left off?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex flex-col sm:flex-row gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              className="border-[#e3d4bb] text-[#6b5c3e] hover:bg-[#faf7f2] hover:text-[#231e1b]"
+              onClick={handleDiscardDraft}
+            >
+              Start Fresh
+            </Button>
+            <Button
+              className="bg-[#231e1b] hover:bg-[#231e1b]/90 text-white"
+              onClick={handleRestoreDraft}
+            >
+              Resume Draft
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

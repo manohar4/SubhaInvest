@@ -9,7 +9,7 @@ import ProfileSetupPage from "./pages/auth/ProfileSetupPage";
 import DashboardPage from "./pages/dashboard/DashboardPage";
 import ProfilePage from "./pages/profile/ProfilePage";
 import InvestPage from "./pages/invest/InvestPage";
-
+import AdminDashboard from "./pages/dashboard/AdminDashboard";
 import { RequireAuth } from "./context/AuthContext";
 
 // Logo import
@@ -34,6 +34,13 @@ function Router() {
         {() => (
           <RequireAuth>
             <DashboardPage />
+          </RequireAuth>
+        )}
+      </Route>
+      <Route path="/admin-dashboard">
+        {() => (
+          <RequireAuth>
+            <AdminDashboard />
           </RequireAuth>
         )}
       </Route>

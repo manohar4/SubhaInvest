@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,7 +18,7 @@ export default function LoginPage() {
   const [showOtp, setShowOtp] = useState(false);
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const { login, verifyOtp } = useAuth();
+  const { user, updateUserState } = useAuth();
 
   // New states for enhanced functionality
   const [loading, setLoading] = useState(false);
@@ -29,6 +29,13 @@ export default function LoginPage() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const recaptchaVerifierRef = useRef<any>(null);
   const [confirmationResult, setConfirmationResult] = useState<any>(null);
+
+  // Add redirect effect for authenticated users
+  useEffect(() => {
+    if (!loading && user && !isNewUser) {
+      setLocation("/dashboard");
+    }
+  }, [user, loading, setLocation]);
 
   const startOtpTimer = () => {
     setOtpTimer(30);
@@ -116,11 +123,8 @@ export default function LoginPage() {
         setIsNewUser(true);
       } else {
         const userData = userSnapshot.data();
-        // setLocation(
-        //   userData.role === "admin" ? "/admin-dashboard" : "/dashboard"
-        // );
         setLocation(
-          userData.role === "admin" ? "/dashboard" : "/dashboard"
+          userData.role === "admin" ? "/admin-dashboard" : "/dashboard"
         );
       }
     } catch (error) {
@@ -143,6 +147,8 @@ export default function LoginPage() {
         role: "customer",
         investments: [],
       });
+
+      await updateUserState();
       setLocation("/dashboard");
     } catch (error: any) {
       toast({
@@ -216,6 +222,8 @@ export default function LoginPage() {
       </div>
     );
   }
+
+  if (user) return null;
 
   return (
     <div className="flex flex-col min-h-screen relative">

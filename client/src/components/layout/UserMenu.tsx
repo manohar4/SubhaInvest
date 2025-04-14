@@ -39,8 +39,8 @@ export default function UserMenu({ isOpen, onClose }: UserMenuProps) {
   };
 
   const handleLogout = () => {
+    logout();
     navigate("/login");
-    // logout();
     onClose();
   };
 

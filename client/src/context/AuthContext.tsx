@@ -23,6 +23,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   logout: () => Promise<void>;
+  updateUserState: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -32,16 +33,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [, navigate] = useLocation();
   const { toast } = useToast();
-
-  useEffect(() => {
-    if (!isLoading) {
-      if (user) {
-        navigate("/dashboard");
-      } else {
-        navigate("/login");
-      }
-    }
-  }, [user, isLoading, navigate]);
 
   // Listen to auth state changes
   useEffect(() => {
@@ -103,6 +94,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const updateUserState = async () => {
+    if (!auth.currentUser) return;
+
+    try {
+      const userDoc = await getDoc(
+        doc(firestoreDb, "users", auth.currentUser.uid)
+      );
+      if (userDoc.exists()) {
+        setUser({
+          uid: auth.currentUser.uid,
+          phoneNumber: auth.currentUser.phoneNumber || "",
+          name: userDoc.data().name || "",
+          email: userDoc.data().email || "",
+          createdAt: userDoc.data().createdAt || new Date().toISOString(),
+          role: userDoc.data().role || "customer",
+        });
+      }
+    } catch (error) {
+      console.error("Error updating user state:", error);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -110,6 +123,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAuthenticated: !!user,
         isLoading,
         logout,
+        updateUserState,
       }}
     >
       {children}
@@ -130,12 +144,8 @@ export function RequireAuth({ children }: { children: ReactNode }) {
   const [, navigate] = useLocation();
 
   useEffect(() => {
-    if (!isLoading) {
-      if (user) {
-        navigate("/dashboard");
-      } else {
-        navigate("/login");
-      }
+    if (!isLoading && !user) {
+      navigate("/login");
     }
   }, [user, isLoading, navigate]);
 
