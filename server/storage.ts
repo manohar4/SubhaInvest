@@ -73,7 +73,7 @@ export class MemStorage implements IStorage {
       },
       {
         id: "subha",
-        name: "Subha Farms",
+        name: "Codename Skylife 2100",
         location: "Mysore",
         minimumInvestment: 75000,
         estimatedReturns: 12,
@@ -113,7 +113,7 @@ export class MemStorage implements IStorage {
         availableSlots: 10,
         projectId: "aura"
       },
-      // Subha Farms models
+      // Codename Skylife 2100 models
       {
         id: "subha-gold",
         name: "Gold",

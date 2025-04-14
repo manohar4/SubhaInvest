@@ -11,6 +11,7 @@ import ProfileSetupPage from "./pages/auth/ProfileSetupPage";
 import DashboardPage from "./pages/dashboard/DashboardPage";
 import ProfilePage from "./pages/profile/ProfilePage";
 import InvestPage from "./pages/invest/InvestPage";
+import SuccessPage from "./pages/SuccessPage";
 
 import { RequireAuth } from "./context/AuthContext";
 
@@ -52,6 +53,13 @@ function Router() {
         {(params) => (
           <RequireAuth>
             <InvestPage />
+          </RequireAuth>
+        )}
+      </Route>
+      <Route path="/success">
+        {() => (
+          <RequireAuth>
+            <SuccessPage />
           </RequireAuth>
         )}
       </Route>

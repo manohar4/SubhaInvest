@@ -129,19 +129,25 @@ export default function DashboardPage() {
                               <h3 className="text-lg font-bold">
                                 {project.name}
                               </h3>
-                              <p className="text-sm">{project.location}</p>
+                             
                             </div>
                           </div>
 
                           <div className="p-4">
-                            <p className="text-sm text-[#6b5c3e] mb-4">
-                              {project.name === "Subha Farms"
+                          <span className="text-sm font-bold text-[#000000]"> 
+                          <p className="text-sm font-normal">{project.location}</p>
+                          {project.name === "Codename Skylife 2100"
+                                ? "Future ready apartments"
+                                : "Relive the victorian era"}
+                           </span>
+                            {/* <p className="text-sm text-[#6b5c3e] mb-4">
+                              {project.name === "Codename Skylife 2100"
                                 ? "120 acres of green luxury with organic farming, events space, and recreational activities."
                                 : "Premium residential project with modern amenities and excellent connectivity."}
-                            </p>
-
+                            </p> */}
+                           
                             <Button
-                              className="w-full bg-[#231e1b] hover:bg-[#231e1b]/90 text-white"
+                              className="w-full bg-[#231e1b] hover:bg-[#231e1b]/90 text-white mt-4"
                               onClick={() => {
                                 selectProject(project);
                                 navigate(`/invest/${project.id}`);

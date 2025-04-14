@@ -10,7 +10,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { Project, InvestmentModel, Investment } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "./AuthContext";
-import SubhaFarmsCover from "../assets/subhaFarmsCover.jpg";
+import VictorianEra from "../assets/victoria.jpg";
 
 interface InvestmentContextType {
   projects: Project[];
@@ -35,24 +35,23 @@ const InvestmentContext = createContext<InvestmentContextType | undefined>(
 const mockProjects: Project[] = [
   {
     id: "subha-farms",
-    name: "Subha Farms",
+    name: "Codename Skylife 2100",
     location: "Bilanganakuppe, Karnataka 562112",
     minimumInvestment: 100000,
     estimatedReturns: 14,
     lockInPeriod: 3,
     availableSlots: 18,
-    image: SubhaFarmsCover,
+    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80",
   },
   {
     id: "subha-white-waters",
-    name: "Subha White Waters",
+    name: "Codename Victoria 2.0",
     location: "Electronic City",
     minimumInvestment: 150000,
     estimatedReturns: 16,
     lockInPeriod: 4,
     availableSlots: 12,
-    image:
-      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80",
+    image:VictorianEra
   },
 ];
 
@@ -62,7 +61,7 @@ const mockInvestments: Investment[] = [
     id: 1,
     userId: 1,
     projectId: "subha-farms",
-    projectName: "Subha Farms",
+    projectName: "Codename Skylife 2100",
     modelId: "premium-a",
     modelName: "Premium A",
     slots: 2,
@@ -81,7 +80,7 @@ const mockInvestments: Investment[] = [
     id: 2,
     userId: 1,
     projectId: "subha-white-waters",
-    projectName: "Subha White Waters",
+    projectName: "Codename Victoria 2.0",
     modelId: "luxury-b",
     modelName: "Luxury B",
     slots: 1,

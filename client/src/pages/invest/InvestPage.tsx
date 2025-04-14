@@ -8,7 +8,7 @@ import BottomNav from "@/components/layout/BottomNav";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/lib/utils";
-import paymentPlan from "@/assets/paymentPlan.png"
+import paymentPlan from "@/assets/paymentPlan.png";
 import { CheckCircle2, Check, ArrowLeft, ArrowRight, Building2, MapPin, Calendar, Banknote, PercentCircle, Clock, Plus, Minus } from "lucide-react";
 
 interface InvestmentDraft {
@@ -25,6 +25,19 @@ const STEPS = [
   "Select Unit/Sqft/Amount",
   "Investment Summary"
 ];
+
+function ImageModal({ isOpen, onClose, imageSrc }: { isOpen: boolean; onClose: () => void; imageSrc: string }) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white p-4 rounded-lg shadow-lg">
+        <button onClick={onClose} className="text-black float-right">Close</button>
+        <img src={imageSrc} alt="Payment Plan" className="max-w-full h-auto" />
+      </div>
+    </div>
+  );
+}
 
 export default function InvestPage() {
   const { projectId } = useParams<{ projectId: string }>();
@@ -49,6 +62,9 @@ export default function InvestPage() {
   
   // Handle draft loading/saving
   const [draft, setDraft] = useState<InvestmentDraft | null>(null);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalImageSrc, setModalImageSrc] = useState("");
 
   useEffect(() => {
     // Load draft from localStorage if exists
@@ -287,14 +303,11 @@ export default function InvestPage() {
   };
 
   const handleContactSales = () => {
-    toast({
-      title: "Success!",
-      description: "Your investment process is successfully started. Our sales team will reach out to you shortly. You can view this application anytime under 'My Investments'.",
-    });
-    navigate("/dashboard");
-    
     // Clear the draft
     localStorage.removeItem(`investDraft_${projectId}`);
+
+    // Navigate to the success page
+    navigate("/success");
   };
   
   const handleSaveDraft = () => {
@@ -348,6 +361,17 @@ export default function InvestPage() {
     return Math.round(maturityAmount);
   };
 
+  const handleImageClick = (src: string | undefined) => {
+    if (src) {
+      setModalImageSrc(src);
+      setIsModalOpen(true);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
   // Project details for Step 1
   const renderProjectDetails = () => {
     if (!selectedProject) return null;
@@ -378,7 +402,7 @@ export default function InvestPage() {
   <div className="w-full md:w-2/5">
     <Card className="border-[#e3d4bb] bg-gradient-to-br from-white to-[#f8f2ed] h-full">
       <CardContent className="p-5 space-y-2">
-       <h4> Project Index</h4>
+       <h4> Project Highlights</h4>
         {[
           "Total Extent",
           "No. of Units",
@@ -433,11 +457,11 @@ export default function InvestPage() {
         </div>
         
         <div>
-          <h3 className="text-lg font-semibold mb-3 text-[#231e1b]">Project Description</h3>
+          <h3 className="text-lg font-semibold mb-3 text-[#231e1b]">Project Details</h3>
           <Card className="border-[#e3d4bb]">
             <CardContent className="p-5">
               <p className="text-[#000000]">
-                Subha Farms is a premium farmland investment opportunity located in {selectedProject.location}. 
+                Codename Skylife 2100 is a premium farmland investment opportunity located in {selectedProject.location}. 
                 This agricultural retreat offers estimated returns of {selectedProject.estimatedReturns}% p.a. with a lock-in period of {selectedProject.lockInPeriod} years.
                 With {selectedProject.availableSlots} investment slots available, this is an excellent opportunity to invest in sustainable agriculture and recreational property.
               </p>
@@ -516,7 +540,7 @@ export default function InvestPage() {
     if (!models.length) return null;
     
     // Feature comparison table with type-safe definitions
-    type FeatureKey = 'minInvestment' | 'roi' | 'lockInPeriod' | 'availableSlots' | 'name';
+    type FeatureKey = 'minInvestment' | 'maxInvestment' | 'roi' | 'lockInPeriod' | 'availableSlots' | 'name' | 'paymentPlan';
     
     interface ComparisonFeature {
       label: string;
@@ -525,18 +549,7 @@ export default function InvestPage() {
     }
     
     const comparisonFeatures: ComparisonFeature[] = [
-      { 
-        label: "Expected ROI", 
-        key: "roi", 
-        format: (v: string | number) => {
-          const numValue = typeof v === 'string' ? parseFloat(v) : v;
-          return (
-            <span className= "inline-block font-semibold text-[#231e1b] text-xl px-2 py-0.5 ">
-              {`${numValue}% p.a.`}
-            </span>
-          );
-        }
-      },
+
 
       { 
         label: "Min Investment", 
@@ -569,9 +582,10 @@ export default function InvestPage() {
         format: (v: string | number) => {
           return (
             <img 
-              src={typeof v === 'string' ? v : ''} 
+              src={v || ''} 
               alt="Payment Plan" 
-              className="w-fit h-auto rounded-md shadow-sm"
+              className="w-fit h-auto rounded-md shadow-sm cursor-pointer"
+              onClick={() => handleImageClick(v)}
             />
           );
         }
@@ -607,111 +621,139 @@ export default function InvestPage() {
     return (
       <div className="space-y-6">
         <div className="bg-white rounded-lg border border-[#e3d4bb] overflow-hidden">
-          <div className="grid grid-cols-4">
-            {/* Features header */}
-            <div className="p-4 border-r border-[#e3d4bb]">
-              <div className="h-20 flex items-end pb-2">
-                <h3 className="text-sm font-semibold text-[#000000]">Features</h3>
-              </div>
-            </div>
-            
-            {/* Sort models to ensure consistent order: Gold, Platinum, Virtual */}
-            {models
-              .sort((a, b) => {
-                if (a.name === "Gold") return -1;
-                if (b.name === "Gold") return 1;
-                if (a.name === "Platinum") return -1;
-                if (b.name === "Platinum") return 1;
-                return 0;
-              })
-              .map(model => {
-                const isSelected = selectedModel?.id === model.id;
-                
-                let badgeClass = "bg-gradient-to-br from-[#FFD700] via-[#FFC107] to-[#FFA500] shadow-sm text-231e1b";
-                if (model.name === "Platinum") {
-                  badgeClass = "bg-gradient-to-br from-[#e0e0e0] via-[#cfd8dc] to-[#b0bec5] text-gray-900 p-6 rounded-2xl shadow-sm";
-                } else if (model.name === "Virtual") {
-                  badgeClass = "bg-[#231e1b] shadow-sm text-white";
-                }
-                
-                return (
-                  <div key={model.id} className={`p-4 border-r border-[#e3d4bb] ${isSelected ? "bg-[#faf7f2]" : ""}`}>
-                    <div className="h-20 flex flex-col justify-between">
-                      <div className="flex justify-between items-start">
-                        <span className={`px-3 py-1 rounded-full text-md font-medium ${badgeClass}`}>
-                          {model.name}
-                        </span>
-                        
-                        {isSelected && (
-                          <div className="flex-shrink-0 text-[#c7ab6e]">
-                            <CheckCircle2 className="h-5 w-5" />
-                          </div>
-                        )}
-                      </div>
-                      
-                      <Button 
-                        className={`w-full mt-2 ${isSelected 
-                          ? "bg-[#c7ab6e] hover:bg-[#a3824a] text-white" 
-                          : "border-[#c7ab6e] text-[#a3824a] bg-white hover:bg-[#faf7f2]"}`}
-                        variant={isSelected ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => handleModelSelect(model)}
-                      >
-                        {isSelected ? "Selected" : "Select"}
-                      </Button>
-                    </div>
+          <div className="overflow-x-auto">
+            <div className="min-w-[600px]">
+              <div className="grid grid-cols-4 md:grid-cols-4">
+                {/* Features header */}
+                <div className="p-4 border-r border-[#e3d4bb] sticky left-0 bg-white z-10 min-w-[150px]">
+                  <div className="h-20 flex items-end pb-2">
+                    <h3 className="text-sm font-semibold text-[#000000]">Features</h3>
                   </div>
-                );
-              })}
-          </div>
-          
-          {/* Feature rows */}
-          {comparisonFeatures.map((feature, index) => (
-            <div key={feature.label} className="grid grid-cols-4 border-t border-[#e3d4bb]">
-              <div className="p-4 border-r border-[#e3d4bb] bg-[#faf7f2]">
-                <p className="text-sm text-[#000000]">{feature.label}</p>
+                </div>
+                
+                {/* Sort models to ensure consistent order: Gold, Platinum, Virtual */}
+                {models
+                  .sort((a, b) => {
+                    if (a.name === "Gold") return -1;
+                    if (b.name === "Gold") return 1;
+                    if (a.name === "Platinum") return -1;
+                    if (b.name === "Platinum") return 1;
+                    return 0;
+                  })
+                  .map(model => {
+                    const isSelected = selectedModel?.id === model.id;
+                    
+                    let badgeClass = "bg-gradient-to-br from-[#FFD700] via-[#FFC107] to-[#FFA500] shadow-sm text-231e1b";
+                    if (model.name === "Platinum") {
+                      badgeClass = "bg-gradient-to-br from-[#e0e0e0] via-[#cfd8dc] to-[#b0bec5] text-gray-900 p-6 rounded-2xl shadow-sm";
+                    } else if (model.name === "Virtual") {
+                      badgeClass = "bg-[#231e1b] shadow-sm text-white";
+                    }
+                    
+                    return (
+                      <div key={model.id} className={`p-4 border-r border-[#e3d4bb] min-w-[150px] ${isSelected ? "bg-[#faf7f2]" : ""}`}>
+                        <div className="h-20 flex flex-col justify-between">
+                          <div className="flex justify-between items-start">
+                            <span className={`px-3 py-1 rounded-full text-md font-medium ${badgeClass}`}>
+                              {model.name}
+                            </span>
+                            
+                            {isSelected && (
+                              <div className="flex-shrink-0 text-[#c7ab6e]">
+                                <CheckCircle2 className="h-5 w-5" />
+                              </div>
+                            )}
+                          </div>
+                          
+                          {/* Move ROI below the model name */}
+                          <div className="mt-2">
+                            <span className="inline-block font-semibold text-[#231e1b] text-xl px-2 py-0.5">
+                              {`${model.roi}% p.a.`}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
               </div>
               
-              {/* Sort models to ensure consistent order */}
-              {models
-                .sort((a, b) => {
-                  if (a.name === "Gold") return -1;
-                  if (b.name === "Gold") return 1;
-                  if (a.name === "Platinum") return -1;
-                  if (b.name === "Platinum") return 1;
-                  return 0;
-                })
-                .map(model => {
-                  const isSelected = selectedModel?.id === model.id;
-                  // Type-safe way to access model property
-                  let value: React.ReactNode = '';
-                  if (feature.key === 'name') {
-                    value = feature.format(model.name);
-                  } else if (feature.key === 'minInvestment') {
-                    value = feature.format(model.minInvestment);
-                  }  else if (feature.key === 'maxInvestment') {
-                    value = feature.format(model.maxInvestment);
-                  } else if (feature.key === 'roi') {
-                    value = feature.format(model.roi);
-                  } else if (feature.key === 'lockInPeriod') {
-                    value = feature.format(model.lockInPeriod);
-                  } else if (feature.key === 'availableSlots') {
-                    value = feature.format(model.availableSlots);
-                  }else if (feature.key === 'paymentPlan') {
-                    value = feature.format(model.paymentPlan);
-                  }
+              {/* Feature rows */}
+              {comparisonFeatures.map((feature, index) => (
+                <div key={feature.label} className="grid grid-cols-4 md:grid-cols-4 border-t border-[#e3d4bb]">
+                  <div className="p-4 border-r border-[#e3d4bb] bg-[#faf7f2] sticky left-0 bg-white z-10 min-w-[150px]">
+                    <p className="text-sm text-[#000000]">{feature.label}</p>
+                  </div>
                   
-                  return (
-                    <div 
-                      key={model.id} 
-                      className={`p-4 border-r border-[#e3d4bb] ${isSelected ? "bg-[#faf7f2]" : ""}`}
-                    >
-                      <div className="text-sm font-medium text-[#231e1b]">{value}</div>
-                    </div>
-                  );
-                })}
+                  {models.map(model => {
+                    const isSelected = selectedModel?.id === model.id;
+                    let value: React.ReactNode = '';
+                    if (feature.key === 'name') {
+                      value = feature.format(model.name);
+                    } else if (feature.key === 'minInvestment') {
+                      value = feature.format(model.minInvestment);
+                    }  else if (feature.key === 'maxInvestment') {
+                      value = feature.format(model.maxInvestment);
+                    } else if (feature.key === 'lockInPeriod') {
+                      value = feature.format(model.lockInPeriod);
+                    } else if (feature.key === 'availableSlots') {
+                      value = feature.format(model.availableSlots);
+                    } else if (feature.key === 'paymentPlan') {
+                      value = (
+                        <img 
+                          src={model.paymentPlan || ''} 
+                          alt="Payment Plan" 
+                          className="w-fit h-auto rounded-md shadow-sm cursor-pointer"
+                          onClick={() => handleImageClick(model.paymentPlan)}
+                        />
+                      );
+                    }
+                    
+                    return (
+                      <div 
+                        key={model.id} 
+                        className={`p-4 border-r border-[#e3d4bb] min-w-[150px] whitespace-normal overflow-hidden ${isSelected ? "bg-[#faf7f2]" : ""}`}
+                      >
+                        <div className="text-sm font-medium text-[#231e1b]">{value}</div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
+
+              {/* Add Select button as the last row */}
+              <div className="grid grid-cols-4 md:grid-cols-4 border-t border-[#e3d4bb]">
+                <div className="p-4 border-r border-[#e3d4bb] bg-[#faf7f2] sticky left-0 bg-white z-10 min-w-[150px]">
+                  <p className="text-sm text-[#000000]">Select Model</p>
+                </div>
+                {models
+                  .sort((a, b) => {
+                    if (a.name === "Gold") return -1;
+                    if (b.name === "Gold") return 1;
+                    if (a.name === "Platinum") return -1;
+                    if (b.name === "Platinum") return 1;
+                    return 0;
+                  })
+                  .map(model => {
+                    const isSelected = selectedModel?.id === model.id;
+                    return (
+                      <div key={model.id} className={`p-4 border-r border-[#e3d4bb] min-w-[150px] ${isSelected ? "bg-[#faf7f2]" : ""}`}
+                      >
+                        <Button 
+                          className={`w-full mt-2 ${isSelected 
+                            ? "bg-[#c7ab6e] hover:bg-[#a3824a] text-white" 
+                            : "border-[#c7ab6e] text-[#a3824a] bg-white hover:bg-[#faf7f2]"}`}
+                          variant={isSelected ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => handleModelSelect(model)}
+                        >
+                          {isSelected ? "Selected" : "Select"}
+                        </Button>
+                      </div>
+                    );
+                  })}
+              </div>
             </div>
-          ))}
+          </div>
         </div>
       </div>
     );
@@ -915,7 +957,7 @@ export default function InvestPage() {
             <div className="mb-8">
               <div className="flex items-center justify-between relative">
                 {STEPS.map((step, index) => (
-                  <div key={index} className="flex flex-col items-center relative z-10">
+                  <div key={index} className="flex flex-col items-center relative z-10 text-center">
                     <div 
                       className={`w-8 h-8 rounded-full flex items-center justify-center ${
                         index < currentStep 
@@ -970,10 +1012,10 @@ export default function InvestPage() {
                 <Button
                   variant="outline"
                   onClick={handlePrevStep}
-                   className="border-[#231e1b] text-[#231e1b]"
+                  className="border-[#231e1b] text-[#231e1b] flex items-center"
                 >
                   <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back
+                  <span className="hidden sm:inline">Back</span>
                 </Button>
               ) : (
                 <div></div>
@@ -1004,19 +1046,29 @@ export default function InvestPage() {
                
               ) : (
                 <div className="space-x-3">
+                  
+                  {/* <Button
+                    onClick={handleCompleteInvestment}
+                    disabled={isLoading}
+                    
+                     className="border-[#231e1b] text-[#231e1b]"
+                  >
+                    {isLoading ? "Processing..." : "Complete Investment"}
+                  </Button> */}
+                  <Button 
+              variant="outline" 
+              size="sm"
+              className="text-xs border-[#c7ab6e] text-[#a3824a]"
+              onClick={handleSaveDraft}
+            >
+              Save Draft
+            </Button>
                   <Button
                     onClick={handleContactSales}
                     variant="outline"
-                    className="border-[#231e1b] text-[#231e1b]"
-                  >
-                    Contact Our Sales
-                  </Button>
-                  <Button
-                    onClick={handleCompleteInvestment}
-                    disabled={isLoading}
                     className="bg-[#231e1b] hover:bg-[#524b47] text-white"
                   >
-                    {isLoading ? "Processing..." : "Complete Investment"}
+                    Contact Our Sales
                   </Button>
                 </div>
               )}
@@ -1028,8 +1080,7 @@ export default function InvestPage() {
           </div>
         )}
       </main>
-      
-      <BottomNav />
+      <ImageModal isOpen={isModalOpen} onClose={handleCloseModal} imageSrc={modalImageSrc} />
     </div>
   );
 }

@@ -70,7 +70,7 @@ export default function LoginPage() {
         <div className="w-full max-w-md bg-[#f8f2ed] p-24 rounded-md">
           <div className="mb-8 text-center">
             <div className="flex justify-center mb-5">
-              <img src={subhaLogo} alt="Subha Logo" className="h-12" />  <h1 className="text-3xl font-bold text-[#a3824a] self-end">Invest</h1>
+              <img src={subhaLogo} alt="Subha Logo" className="h-12" />  
             </div>
           
             <p className="text-[#231elb] mt-2">
